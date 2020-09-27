@@ -1,19 +1,19 @@
-import React from 'react'
+import React from 'react';
 import { Text, View } from 'react-native';
 
-export const Next = () => {
-    return (
-        <View style={{
-            flexDirection: 'column',
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-        }}>
-            <Text style={{
-                fontSize: 25,
-            }}>
-                Next page
-            </Text>
-        </View>
-    )
-}
+export const Next = () => (
+    <View style={{
+        flexDirection: 'column',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }}
+    >
+        <Text style={{
+            fontSize: 25,
+        }}
+        >
+            Next page
+        </Text>
+    </View>
+);

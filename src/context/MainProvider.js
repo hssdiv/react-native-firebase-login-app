@@ -1,15 +1,20 @@
-import React from 'react'
-import { AuthProvider, SpinnerProvider } from './'
-import { OrientationProvider } from './OrientationContext'
+import React from 'react';
+import {
+    AuthProvider, FirebaseStorageProvider, FirestoreProvider, PlanetsProvider, DogsProvider,
+} from '.';
 
 export function MainProvider({ children }) {
     return (
-        <OrientationProvider>
-            <AuthProvider>
-                <SpinnerProvider>
-                    {children}
-                </SpinnerProvider>
-            </AuthProvider>
-        </OrientationProvider>
-    )
+        <AuthProvider>
+            <FirebaseStorageProvider>
+                <FirestoreProvider>
+                    <PlanetsProvider>
+                        <DogsProvider>
+                            {children}
+                        </DogsProvider>
+                    </PlanetsProvider>
+                </FirestoreProvider>
+            </FirebaseStorageProvider>
+        </AuthProvider>
+    );
 }

@@ -1,9 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { AuthContext, SpinnerContext } from './../context/'
-import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SimpleErrorMessage } from './../components/SimpleErrorMessage'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Spinner } from './../components/Spinner'
+import React, { useContext, useState, useEffect } from 'react';
+import {
+    Button, StyleSheet, Text, TextInput, TouchableOpacity, View,
+} from 'react-native';
+import { AuthContext, } from '../context';
+import { SimpleErrorMessage } from '../components/SimpleErrorMessage';
+import { Spinner } from '../components/Spinner';
 
 export const Login = ({ navigation }) => {
     const [email, setEmail] = useState(null);
@@ -15,31 +16,30 @@ export const Login = ({ navigation }) => {
 
     const handleSumbit = async () => {
         if (email && password) {
-            setSpinnerIsVisible(true)
+            setSpinnerIsVisible(true);
             const signInResult = await authMethods.signIn(email, password);
-            setSpinnerIsVisible(false)
+            setSpinnerIsVisible(false);
 
             if (!signInResult.result) {
-                console.log(signInResult)
-                setErrorMsg(signInResult.errorMessage)
+                setErrorMsg(signInResult.errorMessage);
             }
         }
-    }
+    };
 
     useEffect(() => {
         if (currentUser) {
-            navigation.navigate('Private')
+            navigation.navigate('Private');
         }
-    }, [currentUser])
+    }, [currentUser]);
 
     const handleErrorClose = () => {
-        setErrorMsg(null)
-        console.log('click')
-    }
+        setErrorMsg(null);
+    };
 
     return (
         <View
-            style={styles.container}>
+            style={styles.container}
+        >
             <Spinner
                 visible={spinnerIsVisible}
             />
@@ -57,7 +57,7 @@ export const Login = ({ navigation }) => {
                 Email
             </Text>
             <TextInput
-                onChangeText={val => setEmail(val)}
+                onChangeText={(val) => setEmail(val)}
                 style={styles.input}
             />
             <Text
@@ -66,8 +66,8 @@ export const Login = ({ navigation }) => {
                 Password
             </Text>
             <TextInput
-                secureTextEntry={true}
-                onChangeText={val => setPassword(val)}
+                secureTextEntry
+                onChangeText={(val) => setPassword(val)}
                 style={styles.input}
             />
             <TouchableOpacity
@@ -81,8 +81,8 @@ export const Login = ({ navigation }) => {
                 />
             </TouchableOpacity>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -103,16 +103,16 @@ const styles = StyleSheet.create({
         height: 40,
         width: 160,
         borderRadius: 10,
-        backgroundColor: "#4CAF50",
+        backgroundColor: '#4CAF50',
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
-            height: 3
+            height: 3,
         },
         shadowRadius: 5,
-        shadowOpacity: 0.7
-    }
+        shadowOpacity: 0.7,
+    },
 });

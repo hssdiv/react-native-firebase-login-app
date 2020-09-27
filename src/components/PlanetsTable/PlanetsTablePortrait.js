@@ -1,26 +1,35 @@
 import React from 'react'
-import PlanetRowPortrait from './PlanetRowPortrait'
+import { PlanetRowPortrait }from './PlanetRowPortrait'
 import { formatBigNumber } from '../../util/BigNumberFormat'
+import { StyleSheet, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-function PlanetsTablePortrait({ planets }) {
-    
-
+export const PlanetsTablePortrait = ({ planets }) => {
     return (
-        <table  className='planetTable' style={{ borderCollapse: 'collapse', borderSpacing: '5px' }}>
-            <tbody>
-                {planets.map(planet =>
-                    <PlanetRowPortrait
-                        key={planet.name}
-                        name={planet.name}
-                        population={formatBigNumber(planet.population)}
-                        climate={planet.climate}
-                        gravity={planet.gravity}
-                        terrain={planet.terrain}
-                    />
-                )}
-            </tbody>
-        </table>
+        <SafeAreaView>
+            <View style={styles.planetTable}>
+                    {planets.map(planet =>
+                        <PlanetRowPortrait
+                            key={planet.name}
+                            name={planet.name}
+                            population={formatBigNumber(planet.population)}
+                            climate={planet.climate}
+                            gravity={planet.gravity}
+                            terrain={planet.terrain}
+                        />
+                    )}
+            </View>
+        </SafeAreaView>
     )
 }
 
-export default PlanetsTablePortrait
+const styles = StyleSheet.create({
+    planetTable: { 
+        borderRadius: 10,
+        overflow: "hidden",
+        margin: 8,
+        textAlign: "left",
+        borderColor: "black",
+        borderWidth: 1,
+    }
+})

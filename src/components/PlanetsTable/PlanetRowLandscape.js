@@ -1,15 +1,63 @@
 import React from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 
-function PlanetRowLandscape(props) {
+export const PlanetRowLandscape = (props) => {
     return (
-        <tr>
-            <td className='planet-td'><b>{props.name}</b></td>
-            <td className='planet-td'>{props.population}</td>
-            <td className='planet-td'>{props.climate}</td>
-            <td className='planet-td'>{props.gravity}</td>
-            <td className='planet-td'>{props.terrain}</td>
-        </tr>
+        <View style={styles.row}>
+            <View 
+                style={styles.planetTd}>
+                <Text
+                    style={styles.planetTdName}
+                >
+                    {props.name}
+                </Text>
+            </View>
+            <View 
+                style={styles.planetTd}
+            >
+                <Text>
+                    {props.population}
+                </Text>
+            </View>
+            <View 
+                style={styles.planetTd}
+            >
+                <Text>
+                    {props.climate}
+                </Text>
+            </View>
+            <View 
+                style={styles.planetTd}
+            >
+                <Text>
+                    {props.gravity}
+                </Text>
+            </View>
+            <View 
+                style={styles.planetTd}
+            >
+                <Text>
+                    {props.terrain}
+                </Text>
+            </View>
+        </View>
     )
 }
 
-export default PlanetRowLandscape
+const styles = StyleSheet.create({
+    planetTd: {
+        padding: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: 'black',
+        flex: 1,
+        alignSelf: 'stretch'
+    },
+    planetTdName: {
+        fontWeight: "bold",
+    },
+    row: { 
+        flex: 1, 
+        alignSelf: 'stretch', 
+        flexDirection: 'row' 
+    }
+})
