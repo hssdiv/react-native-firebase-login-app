@@ -3,14 +3,14 @@ import { firebaseAuth as auth } from '../config/Firebase';
 
 const reducer = (state, action) => {
     switch (action.type) {
-    case 'USER_LOGGED_IN':
-        return { email: action.email };
-    case 'USER_REGISTERED':
-        return { email: action.email };
-    case 'USER_LOGGED_OUT':
-        return null;
-    default:
-        return state;
+        case 'USER_LOGGED_IN':
+            return { email: action.email };
+        case 'USER_REGISTERED':
+            return { email: action.email };
+        case 'USER_LOGGED_OUT':
+            return null;
+        default:
+            return state;
     }
 };
 

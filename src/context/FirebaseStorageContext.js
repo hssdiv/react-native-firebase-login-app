@@ -4,19 +4,19 @@ import { UniqueIdGenerator } from '../util/UniqueIdGenerator';
 
 const reducer = (state, action) => {
     switch (action.type) {
-    case 'DOG_PICTURE_UPLOADED':
-        console.log('storage reducer: DOG_PICTURE_UPLOADED');
-        return { status: 'UPLOADED' };
-    case 'DOG_PICTURE_DELETED':
-        console.log('storage reducer: DOG_PICTURE_DELETED');
-        return { status: 'DELETED' };
-    case 'FIREBASE_STORAGE_ERROR':
-        console.log('storage reducer: firebase storage error');
-        return { status: 'ERROR', errorMessage: action.errorMessage };
-    case 'UPDATE_PROGRESS_BAR':
-        return { status: 'PROGRESS', percentage: action.percentage };
-    default:
-        return state;
+        case 'DOG_PICTURE_UPLOADED':
+            console.log('storage reducer: DOG_PICTURE_UPLOADED');
+            return { status: 'UPLOADED' };
+        case 'DOG_PICTURE_DELETED':
+            console.log('storage reducer: DOG_PICTURE_DELETED');
+            return { status: 'DELETED' };
+        case 'FIREBASE_STORAGE_ERROR':
+            console.log('storage reducer: firebase storage error');
+            return { status: 'ERROR', errorMessage: action.errorMessage };
+        case 'UPDATE_PROGRESS_BAR':
+            return { status: 'PROGRESS', percentage: action.percentage };
+        default:
+            return state;
     }
 };
 
@@ -32,39 +32,37 @@ export const FirebaseStorageProvider = ({ children }) => {
                 const storageRef = storage.ref();
 
                 const uniqueGeneratedName = UniqueIdGenerator();
-
                 const fileRef = storageRef.child(auth.currentUser.uid).child(uniqueGeneratedName);
-                const task = fileRef.put(result.dogPicture);
+                const task = fileRef.putFile(result.dogPicture);
 
                 task.on('state_changed',
                     (snapshot) => {
                         const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log(`uploaded ${percentage}%`);
                         dispatch({ type: 'UPDATE_PROGRESS_BAR', percentage });
-                        // progressRef.current.value = percentage;
                     },
 
                     (err) => {
                         console.error(`upload progress error:${err}`);
-
                         dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err });
                     },
 
                     async () => {
-                        console.log('upload complete');
-
-                        const fileUrl = await fileRef.getDownloadURL();
-
-                        const db = firestore();
-                        const addCustomdDog = {
-                            breed: result.breed,
-                            subBreed: result.subBreed,
-                            imageUrl: fileUrl,
-                        };
-                        db.collection('dogs').add(addCustomdDog);
-
+                        console.log('storage: upload complete');
                         dispatch({ type: 'DOG_PICTURE_UPLOADED' });
                     });
+
+                task.then(async () => {
+                    console.log('storage upload task completed!');
+                    const fileUrl = await fileRef.getDownloadURL();
+
+                    const addCustomdDog = {
+                        breed: result.breed,
+                        subBreed: result.subBreed,
+                        imageUrl: fileUrl,
+                    };
+                    firestore.collection('dogs').add(addCustomdDog);
+                });
 
                 return { result: true };
             } catch (error) {
@@ -74,12 +72,15 @@ export const FirebaseStorageProvider = ({ children }) => {
         deleteByUrl: async (url) => {
             try {
                 const imageRef = storage.refFromURL(url);
-                await imageRef.delete();
+                await storage.ref(imageRef.fullPath).delete();
+
                 dispatch({ type: 'DOG_PICTURE_DELETED' });
+                console.log('deleted');
                 return { result: true };
             } catch (error) {
                 // dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message})
-                // console.log(error.message)
+                console.log('storage deletion error');
+                console.log(error);
                 return { result: false, errorMessage: error.message };
             }
         },

@@ -8,7 +8,7 @@ export const AddDogCard = ({ onClick }) => (
         style={styles.dogCard}
     >
         <TouchableOpacity
-            onClick={onClick}
+            onPress={onClick}
         >
             <Text
                 style={styles.dogAddText}

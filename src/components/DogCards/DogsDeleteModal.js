@@ -2,20 +2,22 @@ import React, { useContext } from 'react';
 import {
     Modal, Text, View, Button, TouchableOpacity, StyleSheet,
 } from 'react-native';
-import { DogCardContext } from '../../context';
+import { DogsContext } from '../../context';
 
-export const DogDeleteModal = ({
+export const DogsDeleteModal = ({
     visible, title, text, type,
 }) => {
-    const { dogCardModalMethods } = useContext(DogCardContext);
+    const { dogMethods } = useContext(DogsContext);
 
     const handleCancelButton = () => {
-        dogCardModalMethods.closeDeleteModal();
+        dogMethods.closeDeleteModal();
     };
 
     const handleDeleteConfirmButton = () => {
-        if (type === 'DOG_MODAL_DELETE') {
-            dogCardModalMethods.confirmDelete();
+        if (type === 'MODAL_DELETE_CHECKED_PRESSED') {
+            dogMethods.confirmDeleteSelectedPressed();
+        } else {
+            dogMethods.confirmDeleteAllPressed();
         }
     };
 

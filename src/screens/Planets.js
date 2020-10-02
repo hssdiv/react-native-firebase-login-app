@@ -1,34 +1,34 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { View, ScrollView } from 'react-native';
 import { PlanetsContext } from '../context';
-import { Spinner, SimpleErrorMessage } from './../components'
-import { PlanetsTable } from './../components/PlanetsTable/PlanetsTable'
+import { Spinner, SimpleErrorMessage } from '../components';
+import { PlanetsTable } from '../components/PlanetsTable/PlanetsTable';
 
 export const Planets = () => {
-    const { planetsResult, planetsMethods } = useContext(PlanetsContext)
+    const { planetsResult, planetsMethods } = useContext(PlanetsContext);
 
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(null)
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const call = async () => {
-            setSpinnerIsVisible(true)
+            setSpinnerIsVisible(true);
             const result = await planetsMethods.fetchPlanets();
             if (result) {
                 if (result.loaded) {
                     setSpinnerIsVisible(false);
-                    setErrorMessage(null);
+                    setError(null);
                 } else {
                     setSpinnerIsVisible(false);
-                    setErrorMessage(result.errorMessage);
+                    setError(result.errorMessage);
                 }
             } else {
                 setSpinnerIsVisible(false);
-                setErrorMessage(null);
+                setError(null);
             }
-        }
+        };
         call();
-    }, [])
+    }, []);
 
     return (
         <View
@@ -37,22 +37,23 @@ export const Planets = () => {
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'stretch',
-            }}>
+            }}
+        >
             <Spinner
                 visible={spinnerIsVisible}
             />
-            {errorMessage &&
-                <SimpleErrorMessage
-                    error={errorMessage}
-                />}
-            {planetsResult &&
-                <ScrollView>
-                    <PlanetsTable
-
-                        planets={planetsResult}
-                    />
-                </ScrollView>
-            }
+            <SimpleErrorMessage
+                error={error}
+                onPress={() => { setError(null); }}
+            />
+            {planetsResult
+                && (
+                    <ScrollView>
+                        <PlanetsTable
+                            planets={planetsResult}
+                        />
+                    </ScrollView>
+                )}
         </View>
-    )
-}
+    );
+};

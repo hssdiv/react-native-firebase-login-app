@@ -4,23 +4,23 @@ import { cloudFirestore as firestore } from '../config/Firebase';
 
 const reducer = (state, action) => {
     switch (action.type) {
-    case 'FIRESTORE_CREATE':
-        console.log('firestore reducer: DOG_COLECTION_CREATED');
-        return { status: 'CREATED' };
-    case 'FIRESTORE_DELETE':
-        console.log('firestore reducer: DOG_COLECTION_DELETED');
-        return { status: 'DELETED' };
-    case 'FIRESTORE_BATCH_DELETE':
-        console.log('firestore reducer: BATCH_DELETED');
-        return { status: 'BATCH_DELETED' };
-    case 'FIRESTORE_UPDATE':
-        console.log('firestore reducer: DOG_COLLECTION_UPDATED');
-        return { status: 'UPDATED' };
-    case 'FIRESTORE_ERROR':
-        console.log('firestore reducer: firebase storage error');
-        return { status: 'ERROR', errorMessage: action.errorMessage };
-    default:
-        return state;
+        case 'FIRESTORE_CREATE':
+            console.log('firestore reducer: DOG_COLECTION_CREATED');
+            return { status: 'CREATED' };
+        case 'FIRESTORE_DELETE':
+            console.log('firestore reducer: DOG_COLECTION_DELETED');
+            return { status: 'DELETED' };
+        case 'FIRESTORE_BATCH_DELETE':
+            console.log('firestore reducer: BATCH_DELETED');
+            return { status: 'BATCH_DELETED' };
+        case 'FIRESTORE_UPDATE':
+            console.log('firestore reducer: DOG_COLLECTION_UPDATED');
+            return { status: 'UPDATED' };
+        case 'FIRESTORE_ERROR':
+            console.log('firestore reducer: firebase storage error');
+            return { status: 'ERROR', errorMessage: action.errorMessage };
+        default:
+            return state;
     }
 };
 
@@ -35,8 +35,7 @@ export const FirestoreProvider = ({ children }) => {
     const firestoreMethods = {
         addDogToFirestore: async (dogToAdd) => {
             try {
-                const db = firestore();
-                db.collection('dogs').add(dogToAdd);
+                firestore.collection('dogs').add(dogToAdd);
                 dispatch({ type: 'FIRESTORE_CREATE' });
                 return { result: true };
             } catch (error) {
@@ -45,21 +44,17 @@ export const FirestoreProvider = ({ children }) => {
             }
         },
         deleteDogFromFirestore: (dogData) => {
-            const db = firestore();
-            db.collection('dogs').doc(dogData.id).delete().then(() => {
+            firestore.collection('dogs').doc(dogData.id).delete().then(() => {
                 console.log('Dog successfully deleted!');
             })
                 .catch((error) => {
                     console.error('Error removing dog: ', error);
                 });
-
             storageMethods.deleteByUrl(dogData.imageUrl);
         },
         deleteSelected: (dogsChecked) => {
-            const db = firestore();
-
-            db.collection('dogs').get().then((querySnapshot) => {
-                const batch = db.batch();
+            firestore.collection('dogs').get().then((querySnapshot) => {
+                const batch = firestore.batch();
 
                 querySnapshot.forEach((doc) => {
                     if (dogsChecked.find((checkedDog) => ((doc.id === checkedDog.id))).checked) {
@@ -75,10 +70,8 @@ export const FirestoreProvider = ({ children }) => {
             });
         },
         deleteAll: () => {
-            const db = firestore();
-
-            db.collection('dogs').get().then((querySnapshot) => {
-                const batch = db.batch();
+            firestore.collection('dogs').get().then((querySnapshot) => {
+                const batch = firestore.batch();
 
                 querySnapshot.forEach((doc) => {
                     batch.delete(doc.ref);

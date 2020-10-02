@@ -9,7 +9,7 @@ import { Spinner } from '../components/Spinner';
 export const Login = ({ navigation }) => {
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [error, setError] = useState(null);
 
     const { currentUser, authMethods } = useContext(AuthContext);
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
@@ -21,7 +21,7 @@ export const Login = ({ navigation }) => {
             setSpinnerIsVisible(false);
 
             if (!signInResult.result) {
-                setErrorMsg(signInResult.errorMessage);
+                setError(signInResult.errorMessage);
             }
         }
     };
@@ -33,7 +33,7 @@ export const Login = ({ navigation }) => {
     }, [currentUser]);
 
     const handleErrorClose = () => {
-        setErrorMsg(null);
+        setError(null);
     };
 
     return (
@@ -47,7 +47,8 @@ export const Login = ({ navigation }) => {
                 onPress={handleErrorClose}
             >
                 <SimpleErrorMessage
-                    message={errorMsg}
+                    error={error}
+                    onPress={() => { setError(null); }}
                 />
             </TouchableOpacity>
 

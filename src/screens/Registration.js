@@ -9,7 +9,7 @@ export const Registration = () => {
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [repeatedPassword, setRepeatedPassword] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [error, setError] = useState(null);
 
     const { authMethods } = useContext(AuthContext);
     // const { spinnerMethods } = useContext(SpinnerContext);
@@ -21,18 +21,18 @@ export const Registration = () => {
                 const signInResult = await authMethods.signUp(email, password);
                 // spinnerMethods.hideSpinner();
                 if (!signInResult.result) {
-                    setErrorMsg(signInResult.errorMessage);
+                    setError(signInResult.errorMessage);
                 } else {
                     // TODO go to Login
                 }
             } else {
-                setErrorMsg('passwords don\'t match');
+                setError('passwords don\'t match');
             }
         }
     };
 
     const handleErrorClose = () => {
-        setErrorMsg(null);
+        setError(null);
     };
 
     return (
@@ -43,7 +43,7 @@ export const Registration = () => {
                 onPress={handleErrorClose}
             >
                 <SimpleErrorMessage
-                    message={errorMsg}
+                    error={error}
                 />
             </TouchableOpacity>
 

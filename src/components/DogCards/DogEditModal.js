@@ -1,102 +1,153 @@
-import React, { useState } from 'react'
-import { SimpleErrorMessage } from '../../components'
+import React, { useState, useContext } from 'react';
+import {
+    Modal, StyleSheet, Text, TextInput, View, TouchableOpacity, Button,
+} from 'react-native';
+import { SimpleErrorMessage } from '..';
+// import { DogCardContext, DogCardErrorContext } from '../../context';
+import { DogCardContext } from '../../context';
 
-export const DogEditModal = ({ dogData, callback }) => {
+export const DogEditModal = ({ dogData, visible }) => {
     const [breed, setBreed] = useState(dogData.breed);
     const [subBreed, setSubBreed] = useState(dogData.subBreed ? dogData.subBreed : '');
+
+    const { dogCardModalMethods } = useContext(DogCardContext);
+    // const { errorMessageMethods } = useContext(DogCardErrorContext);
     const [error, setError] = useState(null);
 
     const handleCancelButton = () => {
-        setError(null);
-        callback({ action: 'MODAL_CLOSED' });
-    }
+        // errorMessageMethods.hideError();
+        dogCardModalMethods.closeEditModal();
+    };
 
-    useEscape(handleCancelButton);
-
-    const handleConfirmButton = (event) => {
+    const handleConfirmButton = () => {
         if (breed === '') {
+            // errorMessageMethods.showError('You must type in breed');
             setError('You must type in breed');
         } else {
+            // errorMessageMethods.hideError();
             setError(null);
-            if (event) {
-                event.preventDefault();
-            }
-            callback({ action: 'MODAL_CONFIRM_PRESSED', breed: breed, subBreed: subBreed });
+            const updatedDog = { breed, subBreed };
+            dogCardModalMethods.confirmEdit(updatedDog);
         }
-    }
-
-    useEnter(handleConfirmButton);
-
-    const handleCloseModal = () => {
-        callback({ action: 'MODAL_CLOSED' });
-    }
-
-    const errorCallback = (result) => {
-        setError(result);
-    }
+    };
 
     return (
-        <div
-            className='modalConfirm'
+        <Modal
+            visible={visible}
         >
-            <span
-                onClick={handleCloseModal}
-                className='modalClose'
-                title='Close Modal'
+            <View
+                style={styles.container}
             >
-                ×
-            </span>
-            <form
-                onSubmit={handleConfirmButton}
-                className='modalContent'>
-                <div className='modalContainer'>
-                    <h1>Edit Dog</h1>
-                    <p>Change dog data</p>
-                    <SimpleErrorMessage
-                        callback={errorCallback}
-                        error={error}
+                <Text
+                    style={styles.title}
+                >
+                    Edit Dog
+                </Text>
+                <Text
+                    style={styles.text}
+                >
+                    Change dog data
+                </Text>
+                <SimpleErrorMessage
+                    error={error}
+                    onPress={() => { setError(null); }}
+                />
+                <Text
+                    style={styles.label}
+                >
+                    Breed:
+                </Text>
+                <TextInput
+                    defaultValue={breed}
+                    onChangeText={(val) => setBreed(val)}
+                    style={styles.input}
+                />
+                <Text
+                    style={styles.label}
+                >
+                    Sub-breed:
+                </Text>
+                <TextInput
+                    defaultValue={subBreed}
+                    onChangeText={(val) => setSubBreed(val)}
+                    style={styles.input}
+                />
+                <TouchableOpacity
+                    style={styles.ComfirmButton}
+                >
+                    <Button
+                        onPress={handleConfirmButton}
+                        color="white"
+                        title="Confirm"
                     />
-                    <label className='inputLabel'>
-                        Breed:
-                    </label>
-                    <input
-                        className='dogInput'
-                        type='text'
-                        value={breed}
-                        onChange={newValue => setBreed(newValue.target.value)}
-                        name='dogsBreed'
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.cancelButton}
+                >
+                    <Button
+                        onPress={handleCancelButton}
+                        color="white"
+                        title="Cancel"
                     />
-                    <label
-                        className='inputLabel'
-                    >
-                        Sub-breed:
-                    </label>
-                    <input
-                        className='dogInput'
-                        type='text'
-                        value={subBreed}
-                        onChange={newValue => setSubBreed(newValue.target.value)}
-                        name='dogsSubBreed' />
-                    <div
-                        className='modalClearfix'
-                    >
-                        <button
-                            className='modalConfirmButton'
-                            type='button'
-                            onClick={handleConfirmButton}
-                        >
-                            Confirm
-                        </button>
-                        <button
-                            className='modalCancelButton'
-                            type='button'
-                            onClick={handleCancelButton}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    )
-}
+                </TouchableOpacity>
+            </View>
+        </Modal>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'column',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+        padding: 5,
+        fontSize: 24,
+    },
+    text: {
+        padding: 5,
+        fontSize: 16,
+    },
+    label: {
+        padding: 5,
+    },
+    input: {
+        borderWidth: 1,
+        padding: 8,
+        width: 200,
+    },
+    ComfirmButton: {
+        height: 40,
+        width: 160,
+        borderRadius: 10,
+        backgroundColor: 'green',
+        marginLeft: 50,
+        marginRight: 50,
+        marginTop: 20,
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.7,
+    },
+    cancelButton: {
+        height: 40,
+        width: 160,
+        borderRadius: 10,
+        backgroundColor: 'grey',
+        marginLeft: 50,
+        marginRight: 50,
+        marginTop: 20,
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.7,
+    },
+});

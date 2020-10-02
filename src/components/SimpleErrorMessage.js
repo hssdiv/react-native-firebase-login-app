@@ -1,24 +1,51 @@
-import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import {
+    Text, StyleSheet, View,
+} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { DogCardErrorContext } from '../context';
 
-export const SimpleErrorMessage = ({ message }) => (
-    <View
-        style={styles.container}
-    >
-        {message
+export const SimpleErrorMessage = ({ error, onPress }) => {
+    // const [error, setError] = useState(null);
+
+    /* useEffect(() => {
+        if (errorMessageStatus && errorMessageStatus.errorMessage) {
+            setError(errorMessageStatus.errorMessage);
+        } else {
+            setError(null);
+        }
+    }, [props, errorMessageStatus]); */
+
+    const handleCloseButton = () => {
+        // errorMessageMethods.hideError();
+        // setError(null);
+    };
+
+    // const { errorMessageStatus, errorMessageMethods } = useContext(DogCardErrorContext);
+
+    return (
+        <View
+            style={styles.container}
+        >
+            {error
                 && (
-                    <Text
-                        style={styles.message}
+                    <TouchableOpacity
+                        onPress={onPress}
                     >
-                        {`${message} `}
-                        &#10006;
-                    </Text>
+                        <Text
+                            style={styles.error}
+                        >
+                            {error}
+                            &#10006;
+                        </Text>
+                    </TouchableOpacity>
                 )}
-    </View>
-);
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
-    message: {
+    error: {
         color: 'red',
     },
     container: {

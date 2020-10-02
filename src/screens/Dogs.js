@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-    View, StyleSheet, Text, ScrollView, Dimensions,
+    View, StyleSheet, ScrollView, Dimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-    Dog, AddDogCard, DogDeleteModal, DogAddModal,
+    Dog, AddDogCard, DogsDeleteModal, DogAddModal,
 } from '../components/DogCards';
 import { cloudFirestore as firestore } from '../config/Firebase';
 import { Spinner, SimpleErrorMessage } from '../components';
-import { DogsContext, FirebaseStorageContext, FirestoreContext } from '../context';
+import {
+    DogsContext, FirebaseStorageContext, FirestoreContext, DogCardProvider, AddDogCardContext,
+} from '../context';
 
 export const Dogs = () => {
-    // const currentScreenWidth = GetWidth()
-
     const [dogs, setDogs] = useState(null);
     const [dogsChecked, setDogsChecked] = useState(null);
 
@@ -22,13 +21,13 @@ export const Dogs = () => {
     const [deleteAllModalIsVisible, setDeleteAllModalIsVisible] = useState(false);
     const [dogAddModalVisible, setDogAddModalVisible] = useState(false);
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
-    const [deleteCheckedEnabled, setDeleteCheckedEnabled] = useState(false);
 
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null);
 
-    const { dogResult, dogMethods } = useContext(DogsContext);
+    const { dogContextStatus, dogMethods } = useContext(DogsContext);
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext);
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
+    const { addDogCardModalStatus } = useContext(AddDogCardContext);
 
     const screenHeight = Dimensions.get('window').height;
 
@@ -45,29 +44,53 @@ export const Dogs = () => {
     useEffect(() => {
         if (storageStatus) {
             switch (storageStatus.status) {
-            case 'ERROR':
-                setSimpleErrorMsg(storageStatus.errorMessage);
-                break;
-            default:
-                break;
+                case 'ERROR':
+                    setSimpleErrorMsg(storageStatus.errorMessage);
+                    break;
+                default:
+                    break;
             }
         }
         if (firestoreStatus) {
             switch (firestoreStatus.status) {
-            case 'ERROR':
-                setSimpleErrorMsg(firestoreStatus.errorMessage);
-                break;
-            default:
-                break;
+                case 'ERROR':
+                    setSimpleErrorMsg(firestoreStatus.errorMessage);
+                    break;
+                default:
+                    break;
             }
         }
     }, [storageStatus, firestoreStatus]);
 
     useEffect(() => {
-        if (dogResult) {
-            setRandomDog(dogResult);
+        if (dogContextStatus) {
+            switch (dogContextStatus.type) {
+                case 'DOG_LOADED':
+                    setRandomDog(dogContextStatus.dog);
+                    break;
+                case 'SHOW_DELETE_SELECTED_MODAL':
+                    setDeleteModalIsVisible(true);
+                    break;
+                case 'SHOW_DELETE_ALL_MODAL':
+                    setDeleteAllModalIsVisible(true);
+                    break;
+                case 'MODAL_CLOSED':
+                    setDeleteModalIsVisible(false);
+                    setDeleteAllModalIsVisible(false);
+                    break;
+                case 'MODAL_DELETE_SELECTED_PRESSED':
+                    setDeleteModalIsVisible(false);
+                    firestoreMethods.deleteSelected(dogsChecked);
+                    break;
+                case 'MODAL_DELETE_ALL_PRESSED':
+                    setDeleteAllModalIsVisible(false);
+                    firestoreMethods.deleteAll();
+                    break;
+                default:
+                    break;
+            }
         }
-    }, [dogResult]);
+    }, [dogContextStatus]);
 
     useEffect(() => {
         console.log('detected changes to Dogs list:');
@@ -79,7 +102,7 @@ export const Dogs = () => {
                     const vauDog = dogsChecked.find((checkedDog) => checkedDog.id === dog.id);
 
                     if (vauDog) {
-                        return { ...vauDog, ...dogs.find((dog) => dog.id === vauDog.id) };
+                        return { ...vauDog, ...dogs.find((someDog) => someDog.id === vauDog.id) };
                     }
                     return dog;
                 });
@@ -94,8 +117,7 @@ export const Dogs = () => {
                 console.log(newDogsChecked);
             }
         }
-        // eslint-disable-next-line
-    }, [dogs])
+    }, [dogs]);
 
     const handleChecked = (id, isChecked) => {
         const checkedDog = dogsChecked.find((dog) => dog.id === id);
@@ -111,40 +133,50 @@ export const Dogs = () => {
 
     useEffect(() => {
         if ((dogsChecked) && (dogsChecked.find((checkedDog) => checkedDog.checked === true))) {
-            setDeleteCheckedEnabled(true);
+            dogMethods.deleteSelectedButtonEnabled();
         } else {
-            setDeleteCheckedEnabled(false);
+            dogMethods.deleteSelectedButtonDisabled();
         }
     }, [dogsChecked]);
 
-    const handleAddDogOnClick = () => {
-        setDogAddModalVisible(true);
-    };
+    useEffect(() => {
+        const callRandomDogApi = async () => {
+            setSpinnerIsVisible(true);
 
-    const handleDeleteButton = () => {
-        setDeleteModalIsVisible(true);
-    };
+            const randomDogResult = await dogMethods.getRandomDog();
+            if (randomDogResult) {
+                if (randomDogResult.loaded) {
+                    setSpinnerIsVisible(false);
+                    setSimpleErrorMsg(null);
+                } else {
+                    setSpinnerIsVisible(false);
+                    setSimpleErrorMsg('Coudn\'t get dogs from server');
+                }
+            } else {
+                setSpinnerIsVisible(false);
+                setSimpleErrorMsg('Coudn\'t get dogs from server');
+            }
+        };
 
-    const handleDeleteAllButton = () => {
-        setDeleteAllModalIsVisible(true);
-    };
-
-    const modalDeleteCallback = (result) => {
-        switch (result) {
-        case 'MODAL_CLOSED':
-            setDeleteModalIsVisible(false);
-            break;
-        case 'MODAL_DELETE_CHECKED_PRESSED':
-            setDeleteModalIsVisible(false);
-            firestoreMethods.deleteSelected(dogsChecked);
-            break;
-        case 'MODAL_DELETE_ALL_PRESSED':
-            setDeleteAllModalIsVisible(false);
-            firestoreMethods.deleteAll();
-            break;
-        default:
+        if (addDogCardModalStatus) {
+            switch (addDogCardModalStatus.type) {
+                case 'MODAL_ADD_DOG_CONFIRMED':
+                    setDogAddModalVisible(false);
+                    if (addDogCardModalStatus.addType === 'RANDOM') {
+                        callRandomDogApi();
+                    } else {
+                        storageMethods.uploadPicture(addDogCardModalStatus);
+                    }
+                    break;
+                case 'MODAL_ADD_DOG_CLOSED':
+                    setDogAddModalVisible(false);
+                    break;
+                default:
+                    break;
+            }
         }
-    };
+    }, [addDogCardModalStatus]);
+
 
     useEffect(() => {
         console.log('Getting random dog...');
@@ -168,8 +200,7 @@ export const Dogs = () => {
             setSimpleErrorMsg(randomDog.error);
             setSpinnerIsVisible(false);
         }
-        // eslint-disable-next-line
-    }, [randomDog])
+    }, [randomDog]);
 
     function getFullBreedName(url) {
         const position = url.indexOf('breeds');
@@ -179,104 +210,47 @@ export const Dogs = () => {
         return url.substring(start, end);
     }
 
-    const addModalCallback = async (result) => {
-        setDogAddModalVisible(false);
-        switch (result.action) {
-        case 'MODAL_CLOSED':
-            setDogAddModalVisible(false);
-            break;
-        case 'MODAL_CONFIRM_PRESSED':
-            if (result.type === 'RANDOM') {
-                setSpinnerIsVisible(true);
-
-                const randomDogResult = await dogMethods.getRandomDog();
-                if (randomDogResult) {
-                    if (result.loaded) {
-                        setSpinnerIsVisible(false);
-                        setSimpleErrorMsg(null);
-                    } else {
-                        setSpinnerIsVisible(false);
-                        setSimpleErrorMsg('Coudn\'t get dogs from server');
-                    }
-                } else {
-                    setSpinnerIsVisible(false);
-                    setSimpleErrorMsg('Coudn\'t get dogs from server');
-                }
-            } else {
-                storageMethods.uploadPicture(result);
-            }
-            break;
-        default:
-        }
-    };
-
     return (
         <View
             style={{
                 height: screenHeight - 100,
             }}
         >
-
-            {/* {deleteModalIsVisible &&
-                <DogDeleteModal
-                    callback={modalDeleteCallback}
-                    title='Delete dog(s)'
-                    text='Are you sure you want to delete dog(s)?'
-                    type='MODAL_DELETE_CHECKED_PRESSED'
-                />
-            }
-            {deleteAllModalIsVisible &&
-                <DogDeleteModal
-                    callback={modalDeleteCallback}
-                    title='Delete all dogs'
-                    text='Are you sure you want to delete all dogs?'
-                    type='MODAL_DELETE_ALL_PRESSED'
-                />}
-            {dogAddModalVisible &&
-                <DogAddModal callback={addModalCallback} />}
-            <h1>
-                Dogs page
-            </h1>
-            <div>
-                {deleteCheckedEnabled ?
-                    <button
-                        className='deleteDogsButton'
-                        onClick={handleDeleteButton}
-                    >
-                        Delete selected
-                    </button>
-                    :
-                    <button
-                        className='deleteDogsButton'
-                        disabled style={{ opacity: '0.5' }}
-                    >
-                        Delete selected
-                    </button>
-                }
-                <button
-                    className='deleteAllDogsButton'
-                    onClick={handleDeleteAllButton}
-                >
-                    Delete all
-                </button>
-            </div>
-
+            <DogAddModal
+                visible={dogAddModalVisible}
+            />
+            <DogsDeleteModal
+                visible={deleteModalIsVisible}
+                title="Delete dog(s)"
+                text="Are you sure you want to delete selected dog(s)?"
+                type="MODAL_DELETE_CHECKED_PRESSED"
+            />
+            <DogsDeleteModal
+                visible={deleteAllModalIsVisible}
+                title="Delete all dogs"
+                text="Are you sure you want to delete all dogs?"
+                type="MODAL_DELETE_ALL_PRESSED"
+            />
             <SimpleErrorMessage
                 error={simpleErrorMsg}
+                onPress={() => { setSimpleErrorMsg(null); }}
             />
-            */}
             <ScrollView
                 contentContainerStyle={styles.dogCardContainer}
             >
-
-                <AddDogCard onClick={handleAddDogOnClick} />
+                <AddDogCard
+                    onClick={() => setDogAddModalVisible(true)}
+                />
                 {dogsChecked
                     && dogsChecked.map((dog) => (
-                        <Dog
+                        <DogCardProvider
                             key={dog.id}
-                            dogData={dog}
-                            handleChecked={handleChecked}
-                        />
+                        >
+                            <Dog
+                                dogData={dog}
+                                handleChecked={handleChecked}
+                            />
+                        </DogCardProvider>
                     ))}
             </ScrollView>
             {spinnerIsVisible
