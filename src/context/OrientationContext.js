@@ -3,12 +3,12 @@ import { Dimensions } from 'react-native';
 
 const reducer = (state, action) => {
     switch (action) {
-    case 'PORTRAIT_ORIENTATION':
-        return 'PORTRAIT';
-    case 'LANDSCAPE_ORIENTATION':
-        return 'LANDSCAPE';
-    default:
-        return state;
+        case 'PORTRAIT_ORIENTATION':
+            return 'PORTRAIT';
+        case 'LANDSCAPE_ORIENTATION':
+            return 'LANDSCAPE';
+        default:
+            return state;
     }
 };
 

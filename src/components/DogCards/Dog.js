@@ -3,8 +3,9 @@ import {
     View, Text, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DogDeleteModal, DogEditModal } from '.';
-import { Spinner } from '..';
+import { DogDeleteModal } from './DogDeleteModal';
+import { DogEditModal } from './DogEditModal';
+import { Spinner } from '../Spinner';
 import { cloudFirestore } from '../../config/Firebase';
 import { FirestoreContext, DogCardContext } from '../../context';
 
@@ -188,7 +189,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: 'rgb(100, 107, 110)',
         borderColor: 'rgb(100, 107, 110)',
-        height: 500,
+        height: 400,
+        flexBasis: 300,
+        flexGrow: 0.5,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
@@ -199,12 +202,10 @@ const styles = StyleSheet.create({
     },
     dogCardText: {
         padding: 4,
-        paddingTop: 12,
         color: 'white',
     },
     dogCardTextView: {
         padding: 4,
-        paddingTop: 12,
         overflow: 'hidden',
         color: 'white',
         alignSelf: 'center',

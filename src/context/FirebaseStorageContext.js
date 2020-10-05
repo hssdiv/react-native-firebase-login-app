@@ -78,9 +78,9 @@ export const FirebaseStorageProvider = ({ children }) => {
                 console.log('deleted');
                 return { result: true };
             } catch (error) {
-                // dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message})
                 console.log('storage deletion error');
                 console.log(error);
+                dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message });
                 return { result: false, errorMessage: error.message };
             }
         },

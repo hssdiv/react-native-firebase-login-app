@@ -24,7 +24,7 @@ export const MainApp = () => {
                 {currentUser
                     ? (
                         <Drawer.Navigator
-                            initialRouteName="Dogs"
+                            initialRouteName="Private"
                             drawerContent={(props) => (
                                 <CustomDrawerContent
                                     {...props}
@@ -83,23 +83,23 @@ export const MainApp = () => {
                             initialRouteName="Login"
                         >
                             <Drawer.Screen
-                                name="Public"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Public"
-                                        component={Public}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
-                            <Drawer.Screen
                                 name="Login"
                             >
                                 {(props) => (
                                     <TemplateStackNavigator
                                         name="Login"
                                         component={Login}
+                                        {...props}
+                                    />
+                                )}
+                            </Drawer.Screen>
+                            <Drawer.Screen
+                                name="Public"
+                            >
+                                {(props) => (
+                                    <TemplateStackNavigator
+                                        name="Public"
+                                        component={Public}
                                         {...props}
                                     />
                                 )}

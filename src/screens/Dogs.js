@@ -24,6 +24,8 @@ export const Dogs = () => {
 
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null);
 
+    const [orientation, setOrientation] = useState(null);
+
     const { dogContextStatus, dogMethods } = useContext(DogsContext);
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext);
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
@@ -39,6 +41,25 @@ export const Dogs = () => {
             setDogs(dogsData);
         });
         return dogListenerUnsubscribe;
+    }, []);
+
+    useEffect(() => {
+        const dim = Dimensions.get('screen');
+        if (dim.height >= dim.width) {
+            setOrientation('PORTRAIT');
+        } else {
+            setOrientation('LANDSCAPE');
+        }
+        const listener = Dimensions.addEventListener('change', () => {
+            const dim2 = Dimensions.get('screen');
+            if (dim2.height >= dim2.width) {
+                setOrientation('PORTRAIT');
+            } else {
+                setOrientation('LANDSCAPE');
+            }
+        });
+
+        return listener;
     }, []);
 
     useEffect(() => {
@@ -96,7 +117,6 @@ export const Dogs = () => {
         console.log('detected changes to Dogs list:');
         if (dogs) {
             console.log(`Dogs size: ${dogs.length}`);
-            console.log(dogs);
             if (dogsChecked) {
                 const dogsMerged = dogs.map((dog) => {
                     const vauDog = dogsChecked.find((checkedDog) => checkedDog.id === dog.id);
@@ -108,13 +128,9 @@ export const Dogs = () => {
                 });
 
                 setDogsChecked(dogsMerged);
-                console.log('dogsMerged');
-                console.log(dogsMerged);
             } else {
                 const newDogsChecked = dogs.map((dog) => ({ ...dog, checked: false }));
                 setDogsChecked(newDogsChecked);
-                console.log('newDogsChecked');
-                console.log(newDogsChecked);
             }
         }
     }, [dogs]);
@@ -177,7 +193,6 @@ export const Dogs = () => {
         }
     }, [addDogCardModalStatus]);
 
-
     useEffect(() => {
         console.log('Getting random dog...');
         if ((randomDog.message) && (randomDog.message.includes('breeds'))) {
@@ -235,33 +250,67 @@ export const Dogs = () => {
                 error={simpleErrorMsg}
                 onPress={() => { setSimpleErrorMsg(null); }}
             />
-            <ScrollView
-                contentContainerStyle={styles.dogCardContainer}
-            >
-                <AddDogCard
-                    onClick={() => setDogAddModalVisible(true)}
-                />
-                {dogsChecked
-                    && dogsChecked.map((dog) => (
-                        <DogCardProvider
-                            key={dog.id}
-                        >
-                            <Dog
-                                dogData={dog}
-                                handleChecked={handleChecked}
-                            />
-                        </DogCardProvider>
-                    ))}
-            </ScrollView>
-            {spinnerIsVisible
-                && <Spinner />}
+            {orientation === 'PORTRAIT'
+                ? (
+                    <ScrollView
+                        contentContainerStyle={styles.dogCardContainerPortrait}
+                    >
+                        <AddDogCard
+                            onClick={() => setDogAddModalVisible(true)}
+                        />
+                        {dogsChecked
+                            && dogsChecked.map((dog) => (
+                                <DogCardProvider
+                                    key={dog.id}
+                                >
+                                    <Dog
+                                        dogData={dog}
+                                        handleChecked={handleChecked}
+                                    />
+                                </DogCardProvider>
+                            ))}
+                    </ScrollView>
+                )
+                : (
+                    <ScrollView
+                        contentContainerStyle={styles.dogCardContainerLandScape}
+                    >
+                        { console.log(orientation) }
+                        <AddDogCard
+                            onClick={() => setDogAddModalVisible(true)}
+                        />
+                        {dogsChecked
+                            && dogsChecked.map((dog) => (
+                                <DogCardProvider
+                                    key={dog.id}
+                                >
+                                    <Dog
+                                        dogData={dog}
+                                        handleChecked={handleChecked}
+                                    />
+                                </DogCardProvider>
+                            ))}
+                    </ScrollView>
+                )}
+            {
+                spinnerIsVisible
+                && <Spinner />
+            }
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    dogCardContainer: {
-        flexGrow: 1,
+    dogCardContainerPortrait: {
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'nowrap',
         alignItems: 'stretch',
+    },
+    dogCardContainerLandScape: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
     },
 });

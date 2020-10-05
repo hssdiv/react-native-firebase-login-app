@@ -22,6 +22,7 @@ export const DogDeleteModal = ({
     return (
         <Modal
             visible={visible}
+            supportedOrientations={['portrait', 'landscape']}
         >
             <View
                 style={styles.container}

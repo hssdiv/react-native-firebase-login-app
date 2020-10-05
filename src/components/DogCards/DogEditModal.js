@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react';
 import {
     Modal, StyleSheet, Text, TextInput, View, TouchableOpacity, Button,
 } from 'react-native';
-import { SimpleErrorMessage } from '..';
-// import { DogCardContext, DogCardErrorContext } from '../../context';
+import { SimpleErrorMessage } from '../SimpleErrorMessage';
 import { DogCardContext } from '../../context';
 
 export const DogEditModal = ({ dogData, visible }) => {
@@ -11,20 +10,16 @@ export const DogEditModal = ({ dogData, visible }) => {
     const [subBreed, setSubBreed] = useState(dogData.subBreed ? dogData.subBreed : '');
 
     const { dogCardModalMethods } = useContext(DogCardContext);
-    // const { errorMessageMethods } = useContext(DogCardErrorContext);
     const [error, setError] = useState(null);
 
     const handleCancelButton = () => {
-        // errorMessageMethods.hideError();
         dogCardModalMethods.closeEditModal();
     };
 
     const handleConfirmButton = () => {
         if (breed === '') {
-            // errorMessageMethods.showError('You must type in breed');
             setError('You must type in breed');
         } else {
-            // errorMessageMethods.hideError();
             setError(null);
             const updatedDog = { breed, subBreed };
             dogCardModalMethods.confirmEdit(updatedDog);
@@ -34,6 +29,7 @@ export const DogEditModal = ({ dogData, visible }) => {
     return (
         <Modal
             visible={visible}
+            supportedOrientations={['portrait', 'landscape']}
         >
             <View
                 style={styles.container}

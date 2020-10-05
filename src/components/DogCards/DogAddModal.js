@@ -4,7 +4,8 @@ import {
     Image, Platform,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import { SimpleErrorMessage } from '..';
+import { ScrollView } from 'react-native-gesture-handler';
+import { SimpleErrorMessage } from '../SimpleErrorMessage';
 import { RadioButton } from '../../util/RadioButton';
 import { AddDogCardContext } from '../../context';
 
@@ -19,13 +20,8 @@ export const DogAddModal = ({ visible }) => {
 
     const [randomSelected, setRandomSelected] = useState(true);
 
-    // const { errorMessageMethods } = useContext(DogCardErrorContext);
     const [error, setError] = useState(null);
     const { addDogCardModalMethods } = useContext(AddDogCardContext);
-
-    const imagePreviewRef = useRef(null);
-
-    const [addType, setAddType] = useState('RANDOM');
 
     const handleCancelButton = () => {
         setDogPictureThumbnailUri(null);
@@ -33,10 +29,6 @@ export const DogAddModal = ({ visible }) => {
         addDogCardModalMethods.closeAddModal();
     };
 
-    /* React.useEffect(() => {
-        console.log(dogPictureUri)
-    }, [dogPictureUri])
- */
     const launchImageLibrary = () => {
         const options = {
             storageOptions: {
@@ -45,7 +37,6 @@ export const DogAddModal = ({ visible }) => {
             },
         };
         ImagePicker.launchImageLibrary(options, (response) => {
-            // console.log('Response = ', response);
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -55,10 +46,8 @@ export const DogAddModal = ({ visible }) => {
                 alert(response.customButton);
             } else {
                 const source = { uri: response.uri };
-                // console.log('response', JSON.stringify(response));
                 const { uri } = response;
                 const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-                // setDogPictureThumbnailUri(source);
                 setDogPictureThumbnailUri(source);
                 setDogPicture(uploadUri);
             }
@@ -78,47 +67,10 @@ export const DogAddModal = ({ visible }) => {
                 );
                 setDogPicture(null);
                 setDogPictureThumbnailUri(null);
-
-                /* callback({
-                    action: 'MODAL_CONFIRM_PRESSED', type: addType, breed, subBreed, dogPicture,
-                }); */
-                // }
             }
         } else {
             setError(null);
-
             addDogCardModalMethods.confirmAddRandom();
-
-            /* callback({
-                action: 'MODAL_CONFIRM_PRESSED', type: addType, breed, subBreed, dogPicture,
-            }); */
-        }
-    };
-
-    const errorCallback = (result) => {
-        setError(result);
-    };
-
-    const handleCustomAddChange = (event) => {
-        if (event.target.value === 'RANDOM') {
-            setFormEnabled(false);
-        } else {
-            setFormEnabled(true);
-        }
-        setAddType(event.target.value);
-    };
-
-    const uploadFile = async ({ target: { files } }) => {
-        console.log(`dogAddModal files[0]:${files[0]}`);
-
-        if (files[0]) {
-            setDogPicture(files[0]);
-
-            const fr = new FileReader();
-            fr.onload = function () {
-                imagePreviewRef.current.src = fr.result;
-            };
-            fr.readAsDataURL(files[0]);
         }
     };
 
@@ -138,199 +90,110 @@ export const DogAddModal = ({ visible }) => {
     return (
         <Modal
             visible={visible}
+            supportedOrientations={['portrait', 'landscape']}
         >
-            <View
-                style={styles.container}
-            >
-                <Text
-                    style={styles.title}
+            <ScrollView>
+                <View
+                    style={styles.container}
                 >
-                    Add Dog
-                </Text>
-                <Text
-                    style={styles.text}
-                >
-                    Select dog type
-                </Text>
-                <TouchableOpacity
-                    onPress={handleRandomRadioButton}
-                    style={styles.radioButton}
-                >
-                    <RadioButton
-                        selected={randomSelected}
+                    <Text
+                        style={styles.title}
+                    >
+                        Add Dog
+                    </Text>
+                    <Text
+                        style={styles.text}
+                    >
+                        Select dog type
+                    </Text>
+                    <TouchableOpacity
+                        onPress={handleRandomRadioButton}
+                        style={styles.radioButton}
+                    >
+                        <RadioButton
+                            selected={randomSelected}
+                        />
+                        <Text>Random</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={handleCustomRadioButton}
+                        style={styles.radioButton}
+                    >
+                        <RadioButton
+                            selected={!randomSelected}
+                        />
+                        <Text>Custom</Text>
+                    </TouchableOpacity>
+
+                    <SimpleErrorMessage
+                        error={error}
+                        onPress={() => { setError(null); }}
                     />
-                    <Text>Random</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={handleCustomRadioButton}
-                    style={styles.radioButton}
-                >
-                    <RadioButton
-                        selected={!randomSelected}
-                    />
-                    <Text>Custom</Text>
-                </TouchableOpacity>
-
-                <SimpleErrorMessage
-                    error={error}
-                    onPress={() => { setError(null); }}
-                />
-
-                {!randomSelected
-                    && (
-                        <View
-                            style={{ alignItems: 'center' }}
-                        >
-                            <Text
-                                style={styles.label}
-                            >
-                                Breed:
-                            </Text>
-                            <TextInput
-                                onChangeText={(val) => setBreed(val)}
-                                style={styles.input}
-                            />
-                            <Text
-                                style={styles.label}
-                            >
-                                Sub-breed:
-                            </Text>
-                            <TextInput
-                                onChangeText={(val) => setSubBreed(val)}
-                                style={styles.input}
-                            />
-                            {dogPictureThumbnailUri
-                                && (
-                                    <Image
-                                        source={dogPictureThumbnailUri}
-                                        style={styles.image}
-                                    />
-                                )}
-                            <TouchableOpacity
-                                onPress={launchImageLibrary}
-                                style={styles.selectImageButton}
+                    {!randomSelected
+                        && (
+                            <View
+                                style={{ alignItems: 'center' }}
                             >
                                 <Text
-                                    style={styles.selectButtonText}
+                                    style={styles.label}
                                 >
-                                    Select dog picture from Image Library
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                <TouchableOpacity
-                    style={styles.ComfirmButton}
-                >
-                    <Button
-                        onPress={handleConfirmButton}
-                        color="white"
-                        title="Confirm"
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.cancelButton}
-                >
-                    <Button
-                        onPress={handleCancelButton}
-                        color="white"
-                        title="Cancel"
-                    />
-                </TouchableOpacity>
-            </View>
-        </Modal>
-        /*
-
-                <form
-                    onSubmit={handleConfirmButton}
-                    className='modalContent'>
-                    <div className='modalContainer'>
-                        <h1>Add Dog</h1>
-                        <p>Add dog data</p>
-
-                        <div className="radio">
-                            <label>
-                                <input type="radio" value="RANDOM"
-                                    checked={addType === 'RANDOM'}
-                                    onChange={handleCustomAddChange} />
-                                Random dog
-                            </label>
-                        </div>
-                        <div className="radio">
-                            <label>
-                                <input type="radio" value="CUSTOM"
-                                    checked={addType === 'CUSTOM'}
-                                    onChange={handleCustomAddChange} />
-                                Custom dog
-                            </label>
-                        </div>
-
-                        <SimpleErrorMessage
-                            callback={errorCallback}
-                            error={error}
-                        />
-
-                        {formEnabled &&
-                            <>
-                                <label className='inputLabel'>
                                     Breed:
-                                </label>
-                                <input
-                                    className='dogInput'
-                                    type='text'
-                                    onChange={newValue => setBreed(newValue.target.value)}
-                                    name='dogsBreed'
-
+                                </Text>
+                                <TextInput
+                                    onChangeText={(val) => setBreed(val)}
+                                    style={styles.input}
                                 />
-                                <label
-                                    className='inputLabel'
+                                <Text
+                                    style={styles.label}
                                 >
                                     Sub-breed:
-                                </label>
-                                <input
-                                    className='dogInput'
-                                    type='text'
-                                    onChange={newValue => setSubBreed(newValue.target.value)}
-                                    name='dogsSubBreed' />
-
-                                <label className="dogInput">
-                                    {dogPicture &&
-                                        <img
-                                            alt='selected'
-                                            ref={imagePreviewRef}
-                                            style={{ width: '40px', height: '40px', paddingRight: '15px' }}
+                                </Text>
+                                <TextInput
+                                    onChangeText={(val) => setSubBreed(val)}
+                                    style={styles.input}
+                                />
+                                {dogPictureThumbnailUri
+                                    && (
+                                        <Image
+                                            source={dogPictureThumbnailUri}
+                                            style={styles.image}
                                         />
-                                    }
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="form-control profile-pic-uploader"
-                                        onChange={uploadFile}
-                                    />
-                                </label>
-                            </>
-                        }
-                        <div
-                            className='modalClearfix'
-                        >
-                            <button
-                                className='modalConfirmButton'
-                                type='button'
-                                onClick={handleConfirmButton}
-                            >
-                                Confirm
-                            </button>
-                            <button
-                                className='modalCancelButton'
-                                type='button'
-                                onClick={handleCancelButton}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            } */
+                                    )}
+                                <TouchableOpacity
+                                    onPress={launchImageLibrary}
+                                    style={styles.selectImageButton}
+                                >
+                                    <Text
+                                        style={styles.selectButtonText}
+                                    >
+                                        Select dog picture from Image Library
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    <TouchableOpacity
+                        style={styles.ComfirmButton}
+                    >
+                        <Button
+                            onPress={handleConfirmButton}
+                            color="white"
+                            title="Confirm"
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.cancelButton}
+                    >
+                        <Button
+                            onPress={handleCancelButton}
+                            color="white"
+                            title="Cancel"
+                        />
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </Modal>
     );
 };
 

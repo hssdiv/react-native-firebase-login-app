@@ -19,7 +19,6 @@ export const CustomDrawerContent = (props) => {
                 onPress={() => {
                     authMethods.logOut();
                     props.navigation.closeDrawer();
-                    // props.navigation.navigate('Login');
                 }}
             />
         </DrawerContentScrollView>

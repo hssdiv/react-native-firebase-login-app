@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Button, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
@@ -11,30 +11,26 @@ export const Login = ({ navigation }) => {
     const [password, setPassword] = useState(null);
     const [error, setError] = useState(null);
 
-    const { currentUser, authMethods } = useContext(AuthContext);
+    const { authMethods } = useContext(AuthContext);
     const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
 
     const handleSumbit = async () => {
         if (email && password) {
             setSpinnerIsVisible(true);
             const signInResult = await authMethods.signIn(email, password);
-            setSpinnerIsVisible(false);
 
             if (!signInResult.result) {
                 setError(signInResult.errorMessage);
+                setSpinnerIsVisible(false);
             }
         }
     };
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (currentUser) {
             navigation.navigate('Private');
         }
-    }, [currentUser]);
-
-    const handleErrorClose = () => {
-        setError(null);
-    };
+    }, [currentUser]); */
 
     return (
         <View
@@ -44,7 +40,7 @@ export const Login = ({ navigation }) => {
                 visible={spinnerIsVisible}
             />
             <TouchableOpacity
-                onPress={handleErrorClose}
+                onPress={() => setError(null)}
             >
                 <SimpleErrorMessage
                     error={error}

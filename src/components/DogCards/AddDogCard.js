@@ -9,6 +9,7 @@ export const AddDogCard = ({ onClick }) => (
     >
         <TouchableOpacity
             onPress={onClick}
+            style={{ flexGrow: 1, justifyContent: 'center' }}
         >
             <Text
                 style={styles.dogAddText}
@@ -40,6 +41,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.7,
         justifyContent: 'center',
         height: 400,
+        flexBasis: 300,
+        flexGrow: 0.5,
     },
     dogAddText: {
         color: 'white',
