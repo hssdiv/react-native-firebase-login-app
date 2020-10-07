@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "790074318887",
+    "firebase_url": "https://fir-react-app-43d4b.firebaseio.com",
+    "project_id": "fir-react-app-43d4b",
+    "storage_bucket": "fir-react-app-43d4b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790074318887:android:c7de6bdd2f63804e0dee02",
+        "android_client_info": {
+          "package_name": "com.firebase_react_native_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790074318887-km3p7t6dprqk3o0g6rrl3j17vejrf2nc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0viPs1sh5OwWkgXll3Fp9anVoJCKnsGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790074318887-km3p7t6dprqk3o0g6rrl3j17vejrf2nc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "790074318887-m4qcko13sajvrqtcbna86ljcco9o1s4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.div.firebase-react-native-app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

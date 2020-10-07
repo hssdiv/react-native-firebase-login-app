@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 
+apply plugin: 'com.google.gms.google-services'
+
 import com.android.build.OutputFile
 
 /**
@@ -185,6 +187,8 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
+    implementation platform('com.google.firebase:firebase-bom:25.11.0')
+
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
@@ -219,3 +223,12 @@ task copyDownloadableDepsToLibs(type: Copy) {
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
+dependencies {
+  compile 'com.android.support:multidex:1.0.1' //enter the latest version
+}
+android {
+    defaultConfig {
+        multiDexEnabled true
+    }
+}
