@@ -36,9 +36,6 @@ export const TemplateStackNavigator = ({ name, component }) => {
                 name={name}
                 component={component}
                 options={({ navigation }) => ({
-                    headerStyle: {
-                        height: 80,
-                    },
                     headerLeft: () => (
                         <View>
                             <DrawerButton navigation={navigation} />

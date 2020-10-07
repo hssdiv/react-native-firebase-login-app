@@ -22,6 +22,5 @@ export const CustomDrawerContent = (props) => {
                 }}
             />
         </DrawerContentScrollView>
-
     );
 };

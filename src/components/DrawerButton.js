@@ -1,14 +1,20 @@
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const DrawerButton = ({ navigation }) => (
-    <View
-        style={{ marginStart: 10 }}
+    <TouchableOpacity
+        onPress={() => navigation.toggleDrawer()}
     >
-        <Button
-            title="&#9776;"
-            onPress={() => navigation.toggleDrawer()}
-        />
-    </View>
+        <View
+            style={{ marginStart: 10 }}
+        >
+            <Text
+                style={{ color: 'black', fontSize: 16 }}
+            >
+                &#9776;
+            </Text>
+        </View>
+    </TouchableOpacity>
 
 );

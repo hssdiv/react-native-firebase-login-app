@@ -72,13 +72,24 @@ export const Registration = () => {
             />
             <TouchableOpacity
                 style={styles.submitButton}
+                onPress={handleSumbit}
             >
-                <Button
-                    onPress={handleSumbit}
-                    color="white"
-                    title="Sign-up"
-                    accessibilityLabel="Learn more about this button"
-                />
+                <View style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                >
+                    <Text
+                        style={{
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: 18,
+                        }}
+                    >
+                        Sign-up
+                    </Text>
+                </View>
             </TouchableOpacity>
         </View>
     );
