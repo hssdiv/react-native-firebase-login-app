@@ -1,8 +1,9 @@
-export { AddDogCard } from './AddDogCard';
-export { Dog } from './Dog';
-export { DogDeleteModal } from './DogDeleteModal';
-export { DogsDeleteModal } from './DogsDeleteModal';
-export { DogAddModal } from './DogAddModal';
-export { DogEditModal } from './DogEditModal';
-export { DeleteAllDogsButton } from './DeleteAllDogsButton';
-export { DeleteSelectedDogsButton } from './DeleteSelectedDogsButton';
+export * from './AddDogCard';
+export * from './Dog';
+export * from './DogDeleteModal';
+export * from './DogsDeleteModal';
+export * from './DogAddModal';
+export * from './DogEditModal';
+export * from './DeleteAllDogsButton';
+export * from './DeleteSelectedDogsButton';
+export * from './DogsCards';

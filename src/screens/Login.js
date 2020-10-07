@@ -2,11 +2,11 @@ import React, { useState, useContext } from 'react';
 import {
     Button, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { AuthContext, } from '../context';
+import { AuthContext } from '../context';
 import { SimpleErrorMessage } from '../components/SimpleErrorMessage';
 import { Spinner } from '../components/Spinner';
 
-export const Login = ({ navigation }) => {
+export const Login = () => {
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [error, setError] = useState(null);
@@ -26,12 +26,6 @@ export const Login = ({ navigation }) => {
         }
     };
 
-    /* useEffect(() => {
-        if (currentUser) {
-            navigation.navigate('Private');
-        }
-    }, [currentUser]); */
-
     return (
         <View
             style={styles.container}
@@ -39,15 +33,10 @@ export const Login = ({ navigation }) => {
             <Spinner
                 visible={spinnerIsVisible}
             />
-            <TouchableOpacity
-                onPress={() => setError(null)}
-            >
-                <SimpleErrorMessage
-                    error={error}
-                    onPress={() => { setError(null); }}
-                />
-            </TouchableOpacity>
-
+            <SimpleErrorMessage
+                error={error}
+                onPress={() => { setError(null); }}
+            />
             <Text
                 style={styles.label}
             >

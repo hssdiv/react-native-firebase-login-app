@@ -2,12 +2,12 @@ import React, { useReducer, createContext } from 'react';
 
 const reducer = (state, action) => {
     switch (action) {
-    case 'SPINNER_IS_VISIBLE':
-        return true;
-    case 'SPINNER_IS_HIDDEN':
-        return false;
-    default:
-        return state;
+        case 'SPINNER_IS_VISIBLE':
+            return true;
+        case 'SPINNER_IS_HIDDEN':
+            return false;
+        default:
+            return state;
     }
 };
 

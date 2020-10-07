@@ -1,7 +1,7 @@
-export { Next } from './Next';
-export { Planets } from './Planets';
-export { Dogs } from './Dogs';
-export { Login } from './Login';
-export { Private } from './Private';
-export { Public } from './Public';
-export { Registration } from './Registration';
+export * from './Next';
+export * from './Planets';
+export * from './Dogs';
+export * from './Login';
+export * from './Private';
+export * from './Public';
+export * from './Registration';

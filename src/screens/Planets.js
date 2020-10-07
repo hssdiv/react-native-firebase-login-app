@@ -7,23 +7,18 @@ import { PlanetsTable } from '../components/PlanetsTable/PlanetsTable';
 export const Planets = () => {
     const { planetsResult, planetsMethods } = useContext(PlanetsContext);
 
-    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const call = async () => {
-            setSpinnerIsVisible(true);
             const result = await planetsMethods.fetchPlanets();
             if (result) {
                 if (result.loaded) {
-                    setSpinnerIsVisible(false);
                     setError(null);
                 } else {
-                    setSpinnerIsVisible(false);
                     setError(result.errorMessage);
                 }
             } else {
-                setSpinnerIsVisible(false);
                 setError(null);
             }
         };
@@ -39,20 +34,20 @@ export const Planets = () => {
                 alignItems: 'stretch',
             }}
         >
-            <Spinner
-                visible={spinnerIsVisible}
-            />
             <SimpleErrorMessage
                 error={error}
                 onPress={() => { setError(null); }}
             />
-            {planetsResult
-                && (
+            { planetsResult
+                ? (
                     <ScrollView>
                         <PlanetsTable
                             planets={planetsResult}
                         />
                     </ScrollView>
+                )
+                : (
+                    <Spinner />
                 )}
         </View>
     );

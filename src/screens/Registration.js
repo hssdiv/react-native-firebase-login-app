@@ -4,26 +4,25 @@ import {
 } from 'react-native';
 import { AuthContext } from '../context';
 import { SimpleErrorMessage } from '../components/SimpleErrorMessage';
+import { Spinner } from '../components/Spinner';
 
 export const Registration = () => {
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [repeatedPassword, setRepeatedPassword] = useState(null);
     const [error, setError] = useState(null);
+    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
 
     const { authMethods } = useContext(AuthContext);
-    // const { spinnerMethods } = useContext(SpinnerContext);
 
     const handleSumbit = async () => {
         if (email && password && repeatedPassword) {
             if (password === repeatedPassword) {
-                // spinnerMethods.showSpinner();
+                setSpinnerIsVisible(true);
                 const signInResult = await authMethods.signUp(email, password);
-                // spinnerMethods.hideSpinner();
                 if (!signInResult.result) {
                     setError(signInResult.errorMessage);
-                } else {
-                    // TODO go to Login
+                    setSpinnerIsVisible(false);
                 }
             } else {
                 setError('passwords don\'t match');
@@ -31,22 +30,17 @@ export const Registration = () => {
         }
     };
 
-    const handleErrorClose = () => {
-        setError(null);
-    };
-
     return (
         <View
             style={styles.container}
         >
-            <TouchableOpacity
-                onPress={handleErrorClose}
-            >
-                <SimpleErrorMessage
-                    error={error}
-                />
-            </TouchableOpacity>
-
+            <Spinner
+                visible={spinnerIsVisible}
+            />
+            <SimpleErrorMessage
+                error={error}
+                onPress={() => setError(null)}
+            />
             <Text
                 style={styles.label}
             >

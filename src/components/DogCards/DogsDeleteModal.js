@@ -2,22 +2,22 @@ import React, { useContext } from 'react';
 import {
     Modal, Text, View, Button, TouchableOpacity, StyleSheet,
 } from 'react-native';
-import { DogsContext } from '../../context';
+import { DogsScreenUIContext } from '../../context';
 
 export const DogsDeleteModal = ({
     visible, title, text, type,
 }) => {
-    const { dogMethods } = useContext(DogsContext);
+    const { dogsScreenUIMethods } = useContext(DogsScreenUIContext);
 
     const handleCancelButton = () => {
-        dogMethods.closeDeleteModal();
+        dogsScreenUIMethods.closeDeleteModal();
     };
 
     const handleDeleteConfirmButton = () => {
         if (type === 'MODAL_DELETE_CHECKED_PRESSED') {
-            dogMethods.confirmDeleteSelectedPressed();
+            dogsScreenUIMethods.confirmDeleteSelectedPressed();
         } else {
-            dogMethods.confirmDeleteAllPressed();
+            dogsScreenUIMethods.confirmDeleteAllPressed();
         }
     };
 

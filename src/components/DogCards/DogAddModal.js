@@ -92,106 +92,103 @@ export const DogAddModal = ({ visible }) => {
             visible={visible}
             supportedOrientations={['portrait', 'landscape']}
         >
-            <ScrollView>
-                <View
-                    style={styles.container}
+            <ScrollView contentContainerStyle={styles.container}>
+
+                <Text
+                    style={styles.title}
                 >
-                    <Text
-                        style={styles.title}
-                    >
-                        Add Dog
-                    </Text>
-                    <Text
-                        style={styles.text}
-                    >
-                        Select dog type
-                    </Text>
-                    <TouchableOpacity
-                        onPress={handleRandomRadioButton}
-                        style={styles.radioButton}
-                    >
-                        <RadioButton
-                            selected={randomSelected}
-                        />
-                        <Text>Random</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={handleCustomRadioButton}
-                        style={styles.radioButton}
-                    >
-                        <RadioButton
-                            selected={!randomSelected}
-                        />
-                        <Text>Custom</Text>
-                    </TouchableOpacity>
-
-                    <SimpleErrorMessage
-                        error={error}
-                        onPress={() => { setError(null); }}
+                    Add Dog
+                </Text>
+                <Text
+                    style={styles.text}
+                >
+                    Select dog type
+                </Text>
+                <TouchableOpacity
+                    onPress={handleRandomRadioButton}
+                    style={styles.radioButton}
+                >
+                    <RadioButton
+                        selected={randomSelected}
                     />
+                    <Text>Random</Text>
+                </TouchableOpacity>
 
-                    {!randomSelected
-                        && (
-                            <View
-                                style={{ alignItems: 'center' }}
+                <TouchableOpacity
+                    onPress={handleCustomRadioButton}
+                    style={styles.radioButton}
+                >
+                    <RadioButton
+                        selected={!randomSelected}
+                    />
+                    <Text>Custom</Text>
+                </TouchableOpacity>
+
+                <SimpleErrorMessage
+                    error={error}
+                    onPress={() => { setError(null); }}
+                />
+
+                {!randomSelected
+                    && (
+                        <View
+                            style={{ alignItems: 'center' }}
+                        >
+                            <Text
+                                style={styles.label}
+                            >
+                                Breed:
+                            </Text>
+                            <TextInput
+                                onChangeText={(val) => setBreed(val)}
+                                style={styles.input}
+                            />
+                            <Text
+                                style={styles.label}
+                            >
+                                Sub-breed:
+                            </Text>
+                            <TextInput
+                                onChangeText={(val) => setSubBreed(val)}
+                                style={styles.input}
+                            />
+                            {dogPictureThumbnailUri
+                                && (
+                                    <Image
+                                        source={dogPictureThumbnailUri}
+                                        style={styles.image}
+                                    />
+                                )}
+                            <TouchableOpacity
+                                onPress={launchImageLibrary}
+                                style={styles.selectImageButton}
                             >
                                 <Text
-                                    style={styles.label}
+                                    style={styles.selectButtonText}
                                 >
-                                    Breed:
+                                    Select dog picture from Image Library
                                 </Text>
-                                <TextInput
-                                    onChangeText={(val) => setBreed(val)}
-                                    style={styles.input}
-                                />
-                                <Text
-                                    style={styles.label}
-                                >
-                                    Sub-breed:
-                                </Text>
-                                <TextInput
-                                    onChangeText={(val) => setSubBreed(val)}
-                                    style={styles.input}
-                                />
-                                {dogPictureThumbnailUri
-                                    && (
-                                        <Image
-                                            source={dogPictureThumbnailUri}
-                                            style={styles.image}
-                                        />
-                                    )}
-                                <TouchableOpacity
-                                    onPress={launchImageLibrary}
-                                    style={styles.selectImageButton}
-                                >
-                                    <Text
-                                        style={styles.selectButtonText}
-                                    >
-                                        Select dog picture from Image Library
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    <TouchableOpacity
-                        style={styles.ComfirmButton}
-                    >
-                        <Button
-                            onPress={handleConfirmButton}
-                            color="white"
-                            title="Confirm"
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.cancelButton}
-                    >
-                        <Button
-                            onPress={handleCancelButton}
-                            color="white"
-                            title="Cancel"
-                        />
-                    </TouchableOpacity>
-                </View>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                <TouchableOpacity
+                    style={styles.ComfirmButton}
+                >
+                    <Button
+                        onPress={handleConfirmButton}
+                        color="white"
+                        title="Confirm"
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.cancelButton}
+                >
+                    <Button
+                        onPress={handleCancelButton}
+                        color="white"
+                        title="Cancel"
+                    />
+                </TouchableOpacity>
             </ScrollView>
         </Modal>
     );

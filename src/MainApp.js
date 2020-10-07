@@ -13,6 +13,19 @@ export const Drawer = createDrawerNavigator();
 export const MainApp = () => {
     const { currentUser, authMethods } = useContext(AuthContext);
 
+    const privateScreens = [
+        { name: 'Private', component: Private },
+        { name: 'Next', component: Next },
+        { name: 'Planets', component: Planets },
+        { name: 'Dogs', component: Dogs },
+    ];
+
+    const publicScreens = [
+        { name: 'Public', component: Public },
+        { name: 'Login', component: Login },
+        { name: 'Registration', component: Registration },
+    ];
+
     useEffect(() => {
         const listener = authMethods.enableAuthStateListener();
         return listener;
@@ -32,89 +45,40 @@ export const MainApp = () => {
                                 />
                             )}
                         >
-                            <Drawer.Screen
-                                name="Private"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Private"
-                                        component={Private}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
-                            <Drawer.Screen
-                                name="Next"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Next"
-                                        component={Next}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
-                            <Drawer.Screen
-                                name="Planets"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Planets"
-                                        component={Planets}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
-                            <Drawer.Screen
-                                name="Dogs"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Dogs"
-                                        component={Dogs}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
+                            {privateScreens.map((screen) => (
+                                <Drawer.Screen
+                                    key={screen.name}
+                                    name={screen.name}
+                                >
+                                    {(props) => (
+                                        <TemplateStackNavigator
+                                            name={screen.name}
+                                            component={screen.component}
+                                            {...props}
+                                        />
+                                    )}
+                                </Drawer.Screen>
+                            ))}
                         </Drawer.Navigator>
                     )
                     : (
                         <Drawer.Navigator
                             initialRouteName="Login"
                         >
-                            <Drawer.Screen
-                                name="Login"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Login"
-                                        component={Login}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
-                            <Drawer.Screen
-                                name="Public"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Public"
-                                        component={Public}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
-                            <Drawer.Screen
-                                name="Registration"
-                            >
-                                {(props) => (
-                                    <TemplateStackNavigator
-                                        name="Registration"
-                                        component={Registration}
-                                        {...props}
-                                    />
-                                )}
-                            </Drawer.Screen>
+                            {publicScreens.map((screen) => (
+                                <Drawer.Screen
+                                    key={screen.name}
+                                    name={screen.name}
+                                >
+                                    {(props) => (
+                                        <TemplateStackNavigator
+                                            name={screen.name}
+                                            component={screen.component}
+                                            {...props}
+                                        />
+                                    )}
+                                </Drawer.Screen>
+                            ))}
                         </Drawer.Navigator>
                     )}
             </NavigationContainer>

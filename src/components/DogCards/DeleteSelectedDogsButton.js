@@ -1,16 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DogsContext } from '../../context';
+import { DogsScreenUIContext } from '../../context';
 
 export const DeleteSelectedDogsButton = () => {
-    const { dogContextStatus, dogMethods } = useContext(DogsContext);
+    const { dogsScreenUIStatus, dogsScreenUIMethods } = useContext(DogsScreenUIContext);
 
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (dogContextStatus) {
-            switch (dogContextStatus.type) {
+        if (dogsScreenUIStatus) {
+            switch (dogsScreenUIStatus.type) {
                 case 'DELETE_SELECTED_BUTTON_ENABLED':
                     setDisabled(false);
                     break;
@@ -21,10 +21,10 @@ export const DeleteSelectedDogsButton = () => {
                     break;
             }
         }
-    }, [dogContextStatus]);
+    }, [dogsScreenUIStatus]);
 
     const handleDeleteSelectedDogs = () => {
-        dogMethods.showDeleteSelectedDogsModal();
+        dogsScreenUIMethods.showDeleteSelectedDogsModal();
     };
     return (
         <View

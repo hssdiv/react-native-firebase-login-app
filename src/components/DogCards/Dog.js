@@ -5,26 +5,24 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DogDeleteModal } from './DogDeleteModal';
 import { DogEditModal } from './DogEditModal';
-import { Spinner } from '../Spinner';
 import { cloudFirestore } from '../../config/Firebase';
-import { FirestoreContext, DogCardContext } from '../../context';
+import { FirestoreContext, DogCardContext, DogsDataContext } from '../../context';
 
-export const Dog = ({ dogData, handleChecked }) => {
+export const Dog = ({ dogData }) => {
     const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
     const [editModalIsVisible, setEditModalIsVisible] = useState(false);
     const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.checked);
 
     const { firestoreMethods } = useContext(FirestoreContext);
 
-    const [spinnerIsVisible, setSpinnerIsVisible] = useState(false);
-
     const { dogCardModalStatus } = useContext(DogCardContext);
+
+    const { dogsMethods } = useContext(DogsDataContext);
 
     useEffect(() => {
         if (dogCardModalStatus) {
             switch (dogCardModalStatus.type) {
                 case 'MODAL_DELETE_CONFIRMED':
-                    setSpinnerIsVisible(true);
                     setDeletionModalIsVisible(false);
                     firestoreMethods.deleteDogFromFirestore(dogData);
                     break;
@@ -56,7 +54,7 @@ export const Dog = ({ dogData, handleChecked }) => {
     };
 
     const handleDeleteCheckBox = () => {
-        handleChecked(dogData.id, !deleteCheckBoxChecked);
+        dogsMethods.handleDogCheckboxClick(dogData.id, !deleteCheckBoxChecked);
         setDeleteCheckBoxChecked(!deleteCheckBoxChecked);
     };
 
@@ -163,18 +161,6 @@ export const Dog = ({ dogData, handleChecked }) => {
                             <View />
                         )}
                 </View>
-                {spinnerIsVisible
-                    && (
-                        <Spinner
-                            style={
-                                {
-                                    position: 'relative',
-                                    top: 125,
-                                    left: 125,
-                                }
-                            }
-                        />
-                    )}
             </View>
         </View>
     );

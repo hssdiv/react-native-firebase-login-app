@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DogsContext } from '../../context';
+import { DogsScreenUIContext } from '../../context';
 
 
 export const DeleteAllDogsButton = () => {
-    const { dogMethods } = useContext(DogsContext);
+    const { dogsScreenUIMethods } = useContext(DogsScreenUIContext);
 
     const handleDeleteAllDogs = () => {
-        dogMethods.showDeleteAllDogsModal();
+        dogsScreenUIMethods.showDeleteAllDogsModal();
     };
     return (
         <View

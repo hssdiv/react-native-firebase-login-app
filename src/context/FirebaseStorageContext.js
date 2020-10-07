@@ -80,7 +80,7 @@ export const FirebaseStorageProvider = ({ children }) => {
             } catch (error) {
                 console.log('storage deletion error');
                 console.log(error);
-                dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message });
+                // dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message });
                 return { result: false, errorMessage: error.message };
             }
         },

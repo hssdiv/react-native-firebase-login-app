@@ -29,5 +29,6 @@ module.exports = {
         'react/jsx-props-no-spreading': 0,
         'react/destructuring-assignment': 0,
         'no-console': 0,
+        'no-case-declarations': 0,
     },
 };

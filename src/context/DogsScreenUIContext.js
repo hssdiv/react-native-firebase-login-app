@@ -1,5 +1,4 @@
 import React, { useReducer, createContext } from 'react';
-import { getRandomDog } from '../api/DogApi';
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -25,23 +24,13 @@ const reducer = (state, action) => {
     }
 };
 
-export const DogsContext = createContext();
+export const DogsScreenUIContext = createContext();
 
-export const DogsProvider = ({ children }) => {
+export const DogsScreenUIProvider = ({ children }) => {
     const initialState = null;
-    const [dogContextStatus, dispatch] = useReducer(reducer, initialState);
+    const [dogsScreenUIStatus, dispatch] = useReducer(reducer, initialState);
 
-    const dogMethods = {
-        getRandomDog: async () => {
-            console.log('loading dog...');
-            const result = await getRandomDog();
-
-            if (result) {
-                dispatch({ type: 'DOG_LOADED', dogResult: result });
-                return { loaded: true };
-            }
-            return { loaded: false, errorMessage: 'error while loading dog' };
-        },
+    const dogsScreenUIMethods = {
         showDeleteSelectedDogsModal: () => {
             dispatch({ type: 'SHOW_DELETE_SELECTED_MODAL' });
         },
@@ -66,13 +55,13 @@ export const DogsProvider = ({ children }) => {
     };
 
     return (
-        <DogsContext.Provider
+        <DogsScreenUIContext.Provider
             value={{
-                dogContextStatus,
-                dogMethods,
+                dogsScreenUIStatus,
+                dogsScreenUIMethods,
             }}
         >
             {children}
-        </DogsContext.Provider>
+        </DogsScreenUIContext.Provider>
     );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     AuthProvider, FirebaseStorageProvider, FirestoreProvider,
-    PlanetsProvider, DogsProvider, AddDogCardProvider,
+    PlanetsProvider, DogsScreenUIProvider, DogsDataProvider, AddDogCardProvider,
 } from '.';
 
 export function MainProvider({ children }) {
@@ -10,11 +10,13 @@ export function MainProvider({ children }) {
             <FirebaseStorageProvider>
                 <FirestoreProvider>
                     <PlanetsProvider>
-                        <DogsProvider>
-                            <AddDogCardProvider>
-                                {children}
-                            </AddDogCardProvider>
-                        </DogsProvider>
+                        <DogsScreenUIProvider>
+                            <DogsDataProvider>
+                                <AddDogCardProvider>
+                                    {children}
+                                </AddDogCardProvider>
+                            </DogsDataProvider>
+                        </DogsScreenUIProvider>
                     </PlanetsProvider>
                 </FirestoreProvider>
             </FirebaseStorageProvider>
