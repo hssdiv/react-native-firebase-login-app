@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
 import { DrawerButton } from './DrawerButton';
 import { DeleteAllDogsButton, DeleteSelectedDogsButton } from './DogCards';
 import { FirebaseStorageContext } from '../context';
@@ -21,7 +22,7 @@ export const TemplateStackNavigator = ({ name, component }) => {
                     setProgressWidth(0);
                     break;
                 case 'PROGRESS':
-                    console.log(`in pixel: ${screenWidth - screenWidth * storageStatus.percentage}`);
+                    console.log(`in pixel: ${(screenWidth / 100) * storageStatus.percentage}`);
                     setProgressWidth(screenWidth * storageStatus.percentage);
                     break;
                 default:
@@ -37,10 +38,20 @@ export const TemplateStackNavigator = ({ name, component }) => {
                 component={component}
                 options={({ navigation }) => ({
                     headerLeft: () => (
-                        <View>
-                            <DrawerButton navigation={navigation} />
-                            <View style={{ width: progressWidth, height: 3, backgroundColor: 'red' }} />
-                        </View>
+                        <DrawerButton
+                            navigation={navigation}
+                        />
+                    ),
+                    headerBackground: () => (
+                        <SafeAreaView>
+                            <View
+                                style={{
+                                    width: progressWidth,
+                                    height: 3,
+                                    backgroundColor: 'red',
+                                }}
+                            />
+                        </SafeAreaView>
                     ),
                     headerRight: () => (
                         (name === 'Dogs')
@@ -56,5 +67,3 @@ export const TemplateStackNavigator = ({ name, component }) => {
         </Stack.Navigator>
     );
 };
-
-//

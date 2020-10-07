@@ -70,21 +70,45 @@ export const DogEditModal = ({ dogData, visible }) => {
                 />
                 <TouchableOpacity
                     style={styles.ComfirmButton}
+                    onPress={handleConfirmButton}
                 >
-                    <Button
-                        onPress={handleConfirmButton}
-                        color="white"
-                        title="Confirm"
-                    />
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 18,
+                            }}
+                        >
+                            Confirm
+                        </Text>
+                    </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.cancelButton}
+                    onPress={handleCancelButton}
                 >
-                    <Button
-                        onPress={handleCancelButton}
-                        color="white"
-                        title="Cancel"
-                    />
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 18,
+                            }}
+                        >
+                            Cancel
+                        </Text>
+                    </View>
                 </TouchableOpacity>
             </View>
         </Modal>

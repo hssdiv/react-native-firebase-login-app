@@ -1,6 +1,6 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
-    Modal, StyleSheet, Text, TextInput, View, TouchableOpacity, Button,
+    Modal, StyleSheet, Text, TextInput, View, TouchableOpacity,
     Image, Platform,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
@@ -43,13 +43,15 @@ export const DogAddModal = ({ visible }) => {
                 console.log('ImagePicker Error: ', response.error);
             } else if (response.customButton) {
                 console.log('User tapped custom button: ', response.customButton);
-                alert(response.customButton);
             } else {
+                console.log(response.uri);
                 const source = { uri: response.uri };
+                const pictureData = response.data;
                 const { uri } = response;
-                const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+                // const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
                 setDogPictureThumbnailUri(source);
-                setDogPicture(uploadUri);
+                // setDogPicture(uploadUri);
+                setDogPicture(pictureData);
             }
         });
     };
@@ -93,7 +95,6 @@ export const DogAddModal = ({ visible }) => {
             supportedOrientations={['portrait', 'landscape']}
         >
             <ScrollView contentContainerStyle={styles.container}>
-
                 <Text
                     style={styles.title}
                 >
@@ -173,21 +174,45 @@ export const DogAddModal = ({ visible }) => {
                     )}
                 <TouchableOpacity
                     style={styles.ComfirmButton}
+                    onPress={handleConfirmButton}
                 >
-                    <Button
-                        onPress={handleConfirmButton}
-                        color="white"
-                        title="Confirm"
-                    />
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 18,
+                            }}
+                        >
+                            Confirm
+                        </Text>
+                    </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.cancelButton}
+                    onPress={handleCancelButton}
                 >
-                    <Button
-                        onPress={handleCancelButton}
-                        color="white"
-                        title="Cancel"
-                    />
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 18,
+                            }}
+                        >
+                            Cancel
+                        </Text>
+                    </View>
                 </TouchableOpacity>
             </ScrollView>
         </Modal>
@@ -225,6 +250,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 10,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
@@ -241,6 +267,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 10,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
@@ -257,6 +284,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 5,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,

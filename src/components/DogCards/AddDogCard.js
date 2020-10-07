@@ -27,9 +27,7 @@ export const AddDogCard = ({ onClick }) => (
 const styles = StyleSheet.create({
     dogCard: {
         borderRadius: 5,
-        margin: 8,
-        marginStart: 50,
-        marginEnd: 50,
+        margin: 10,
         backgroundColor: 'rgb(100, 107, 110);',
         color: 'white',
         shadowColor: '#000000',
@@ -42,7 +40,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: 400,
         flexBasis: 300,
-        flexGrow: 0.5,
     },
     dogAddText: {
         color: 'white',

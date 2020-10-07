@@ -1,7 +1,6 @@
 export * from './AuthContext';
 export * from './PlanetsContext';
 export * from './SpinnerContext';
-export * from './OrientationContext';
 export * from './DogsScreenUIContext';
 export * from './DogsDataContext';
 export * from './FirebaseStorageContext';

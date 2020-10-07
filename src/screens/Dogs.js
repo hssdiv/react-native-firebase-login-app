@@ -42,14 +42,14 @@ export const Dogs = () => {
     }, []);
 
     useEffect(() => {
-        const dim = Dimensions.get('screen');
+        const dim = Dimensions.get('window');
         if (dim.height >= dim.width) {
             setOrientation('PORTRAIT');
         } else {
             setOrientation('LANDSCAPE');
         }
         const listener = Dimensions.addEventListener('change', () => {
-            const dim2 = Dimensions.get('screen');
+            const dim2 = Dimensions.get('window');
             if (dim2.height >= dim2.width) {
                 setOrientation('PORTRAIT');
             } else {
@@ -289,11 +289,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         flexWrap: 'nowrap',
         alignItems: 'stretch',
+        marginStart: 50,
+        marginEnd: 50,
     },
     dogsContainerLandscape: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'center',
+        justifyContent: 'center',
     },
 });

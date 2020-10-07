@@ -33,8 +33,8 @@ export const FirebaseStorageProvider = ({ children }) => {
 
                 const uniqueGeneratedName = UniqueIdGenerator();
                 const fileRef = storageRef.child(auth.currentUser.uid).child(uniqueGeneratedName);
-                const task = fileRef.putFile(result.dogPicture);
-
+                // const task = fileRef.putFile(result.dogPicture);
+                const task = fileRef.putString(result.dogPicture);
                 task.on('state_changed',
                     (snapshot) => {
                         const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;

@@ -7,14 +7,14 @@ export const PlanetsTable = ({ planets }) => {
     const [orientation, setOrientation] = useState(null);
 
     useEffect(() => {
-        const dim = Dimensions.get('screen');
+        const dim = Dimensions.get('window');
         if (dim.height >= dim.width) {
             setOrientation('PORTRAIT');
         } else {
             setOrientation('LANDSCAPE');
         }
         const listener = Dimensions.addEventListener('change', () => {
-            const dim2 = Dimensions.get('screen');
+            const dim2 = Dimensions.get('window');
             if (dim2.height >= dim2.width) {
                 setOrientation('PORTRAIT');
             } else {

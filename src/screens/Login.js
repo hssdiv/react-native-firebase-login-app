@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 10,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,

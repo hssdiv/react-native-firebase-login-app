@@ -19,6 +19,28 @@ export const Dog = ({ dogData }) => {
 
     const { dogsMethods } = useContext(DogsDataContext);
 
+    const [imageUrlFromStorage, setImageUrlFromStorage] = useState(null);
+
+    useEffect(() => {
+        const call = async () => {
+            if (dogData.imageUrl.includes('firebasestorage')) {
+                const response = await fetch(dogData.imageUrl);
+                const blob = await response.blob();
+                const string = await new Response(blob).text();
+                setImageUrlFromStorage(string);
+            }
+        };
+        call();
+    }, []);
+
+    useEffect(() => {
+        if (imageUrlFromStorage) {
+            console.log('vau');
+        } else {
+            console.log('vau null');
+        }
+    }, [imageUrlFromStorage]);
+
     useEffect(() => {
         if (dogCardModalStatus) {
             switch (dogCardModalStatus.type) {
@@ -71,13 +93,25 @@ export const Dog = ({ dogData }) => {
                 dogData={dogData}
             />
             <View>
-                <Image
-                    style={styles.dogImage}
-                    resizeMode="contain"
-                    source={{
-                        uri: dogData.imageUrl,
-                    }}
-                />
+                {imageUrlFromStorage
+                    ? (
+                        <Image
+                            style={styles.dogImage}
+                            resizeMode="contain"
+                            source={{
+                                uri: `data:image/png;base64,${imageUrlFromStorage}`,
+                            }}
+                        />
+                    )
+                    : (
+                        <Image
+                            style={styles.dogImage}
+                            resizeMode="contain"
+                            source={{
+                                uri: dogData.imageUrl,
+                            }}
+                        />
+                    )}
                 {deleteCheckBoxChecked
                     ? (
                         <TouchableOpacity
@@ -169,15 +203,11 @@ export const Dog = ({ dogData }) => {
 const styles = StyleSheet.create({
     dogCard: {
         borderRadius: 5,
-        marginStart: 50,
-        marginEnd: 50,
-        marginTop: 10,
-        marginBottom: 10,
+        margin: 10,
         backgroundColor: 'rgb(100, 107, 110)',
         borderColor: 'rgb(100, 107, 110)',
         height: 400,
         flexBasis: 300,
-        flexGrow: 0.5,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
@@ -200,7 +230,7 @@ const styles = StyleSheet.create({
         marginTop: 0,
         paddingTop: 0,
         alignSelf: 'stretch',
-        height: 250,
+        height: 240,
     },
     dogIcon: {
         borderColor: 'white',

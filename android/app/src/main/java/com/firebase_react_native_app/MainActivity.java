@@ -2,6 +2,9 @@ package com.firebase_react_native_app;
 
 import com.facebook.react.ReactActivity;
 
+import android.content.Intent;
+import android.content.res.Configuration;
+
 public class MainActivity extends ReactActivity {
 
   /**

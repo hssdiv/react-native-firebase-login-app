@@ -39,21 +39,45 @@ export const DogDeleteModal = ({
                 </Text>
                 <TouchableOpacity
                     style={styles.deleteButton}
+                    onPress={handleDeleteConfirmButton}
                 >
-                    <Button
-                        onPress={handleDeleteConfirmButton}
-                        color="white"
-                        title="Delete"
-                    />
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 18,
+                            }}
+                        >
+                            Delete
+                        </Text>
+                    </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.cancelButton}
+                    onPress={handleCancelButton}
                 >
-                    <Button
-                        onPress={handleCancelButton}
-                        color="white"
-                        title="Cancel"
-                    />
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 18,
+                            }}
+                        >
+                            Cancel
+                        </Text>
+                    </View>
                 </TouchableOpacity>
             </View>
         </Modal>
@@ -88,6 +112,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 10,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
@@ -104,6 +129,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 10,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,

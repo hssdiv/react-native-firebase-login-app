@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import {
-    Button, StyleSheet, Text, TextInput, TouchableOpacity, View,
+    StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { AuthContext } from '../context';
 import { SimpleErrorMessage } from '../components/SimpleErrorMessage';
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
+        elevation: 10,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,

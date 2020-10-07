@@ -3,11 +3,11 @@ import { fetchStarWarsPlanets } from '../api/PlanetsApi';
 
 const reducer = (state, action) => {
     switch (action.type) {
-    case 'PLANETS_LOADED':
-        console.log('reducer: planets loaded');
-        return action.planetsResult;
-    default:
-        return state;
+        case 'PLANETS_LOADED':
+            console.log('reducer: planets loaded');
+            return action.planetsResult;
+        default:
+            return state;
     }
 };
 
