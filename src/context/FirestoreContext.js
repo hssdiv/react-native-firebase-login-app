@@ -21,6 +21,7 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 spinnerIsVisible: false,
+                urlToDeleteFromStorage: action.urlToDeleteFromStorage,
                 type: 'DELETE_FROM_STORAGE',
             };
         case 'FIRESTORE_BATCH_DELETE':

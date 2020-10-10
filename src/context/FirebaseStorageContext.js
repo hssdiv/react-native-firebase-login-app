@@ -17,14 +17,6 @@ const reducer = (prevState, action) => {
                 spinnerIsVisible: false,
                 type: 'DELETED',
             };
-        case 'FIREBASE_STORAGE_ERROR':
-            console.log('storage reducer: firebase storage error');
-            return {
-                ...prevState,
-                type: 'ERROR',
-                spinnerIsVisible: false,
-                errorMessage: action.errorMessage,
-            };
         case 'ADD_CUSTOM_DOG_TO_FIRESTORE':
             return {
                 ...prevState,
@@ -48,6 +40,7 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 type: 'ERROR',
+                spinnerIsVisible: false,
                 errorMessage: action.errorMessage,
             };
         default:
@@ -82,7 +75,7 @@ export const FirebaseStorageProvider = ({ children }) => {
 
                     (err) => {
                         console.error(`upload progress error:${err}`);
-                        dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: err });
+                        dispatch({ type: 'ERROR', errorMessage: err.message });
                     },
 
                     async () => {
@@ -98,12 +91,13 @@ export const FirebaseStorageProvider = ({ children }) => {
                         breed: result.breed,
                         subBreed: result.subBreed,
                         imageUrl: fileUrl,
+                        custom: true,
                     };
                     dispatch({ type: 'ADD_CUSTOM_DOG_TO_FIRESTORE', dogToAdd: addCustomdDog });
                 });
                 return { result: true };
             } catch (error) {
-                dispatch({ type: 'FIREBASE_STORAGE_ERROR', errorMessage: error.message });
+                dispatch({ type: 'ERROR', errorMessage: error.message });
                 return { result: false, errorMessage: error.message };
             }
         },
@@ -118,7 +112,7 @@ export const FirebaseStorageProvider = ({ children }) => {
             } catch (error) {
                 dispatch({
                     type: 'ERROR',
-                    errorMessage: error,
+                    errorMessage: error.message,
                 });
                 return { result: false };
             }
