@@ -1,13 +1,13 @@
 import React, { useState, useContext } from 'react';
 import {
     Modal, StyleSheet, Text, TextInput, View, TouchableOpacity,
-    Image, Platform,
+    Image,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SimpleErrorMessage } from '../SimpleErrorMessage';
-import { RadioButton } from '../../util/RadioButton';
-import { AddDogCardContext } from '../../context';
+import { RadioButton } from '../RadioButton';
+import { DogsContext } from '../../context';
 
 export const DogAddModal = ({ visible }) => {
     const [breed, setBreed] = useState(null);
@@ -21,12 +21,12 @@ export const DogAddModal = ({ visible }) => {
     const [randomSelected, setRandomSelected] = useState(true);
 
     const [error, setError] = useState(null);
-    const { addDogCardModalMethods } = useContext(AddDogCardContext);
+    const { dogsContextMethods } = useContext(DogsContext);
 
     const handleCancelButton = () => {
         setDogPictureThumbnailUri(null);
         setDogPicture(null);
-        addDogCardModalMethods.closeAddModal();
+        dogsContextMethods.closeModal();
     };
 
     const launchImageLibrary = () => {
@@ -47,7 +47,7 @@ export const DogAddModal = ({ visible }) => {
                 console.log(response.uri);
                 const source = { uri: response.uri };
                 const pictureData = response.data;
-                const { uri } = response;
+                // const { uri } = response;
                 // const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
                 setDogPictureThumbnailUri(source);
                 // setDogPicture(uploadUri);
@@ -64,7 +64,7 @@ export const DogAddModal = ({ visible }) => {
                 setError('You must uplaod dog picture');
             } else {
                 setError(null);
-                addDogCardModalMethods.confirmAddCustom(
+                dogsContextMethods.confirmAddCustom(
                     { breed, subBreed, dogPicture },
                 );
                 setDogPicture(null);
@@ -72,7 +72,7 @@ export const DogAddModal = ({ visible }) => {
             }
         } else {
             setError(null);
-            addDogCardModalMethods.confirmAddRandom();
+            dogsContextMethods.confirmAddRandom();
         }
     };
 

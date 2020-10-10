@@ -10,7 +10,7 @@ export const DogDeleteModal = ({
     const { dogCardModalMethods } = useContext(DogCardContext);
 
     const handleCancelButton = () => {
-        dogCardModalMethods.closeDeleteModal();
+        dogCardModalMethods.closeModal();
     };
 
     const handleDeleteConfirmButton = () => {

@@ -1,4 +1,4 @@
-export * from './AddDogCard';
+export * from './AddDogButton';
 export * from './Dog';
 export * from './DogDeleteModal';
 export * from './DogsDeleteModal';

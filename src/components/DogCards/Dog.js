@@ -6,20 +6,19 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DogDeleteModal } from './DogDeleteModal';
 import { DogEditModal } from './DogEditModal';
 import { cloudFirestore } from '../../config/Firebase';
-import { FirestoreContext, DogCardContext, DogsDataContext } from '../../context';
+import { FirestoreContext, DogCardContext, DogsContext } from '../../context';
 
 export const Dog = ({ dogData }) => {
     const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
     const [editModalIsVisible, setEditModalIsVisible] = useState(false);
     const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.checked);
+    const [imageUrlFromStorage, setImageUrlFromStorage] = useState(null);
+
+    const [checkboxVisible, setCheckboxVisible] = useState(false);
 
     const { firestoreMethods } = useContext(FirestoreContext);
-
     const { dogCardModalStatus } = useContext(DogCardContext);
-
-    const { dogsMethods } = useContext(DogsDataContext);
-
-    const [imageUrlFromStorage, setImageUrlFromStorage] = useState(null);
+    const { dogsContextMethods } = useContext(DogsContext);
 
     useEffect(() => {
         const call = async () => {
@@ -32,14 +31,6 @@ export const Dog = ({ dogData }) => {
         };
         call();
     }, []);
-
-    useEffect(() => {
-        if (imageUrlFromStorage) {
-            console.log('vau');
-        } else {
-            console.log('vau null');
-        }
-    }, [imageUrlFromStorage]);
 
     useEffect(() => {
         if (dogCardModalStatus) {
@@ -76,127 +67,135 @@ export const Dog = ({ dogData }) => {
     };
 
     const handleDeleteCheckBox = () => {
-        dogsMethods.handleDogCheckboxClick(dogData.id, !deleteCheckBoxChecked);
+        dogsContextMethods.handleDogCheckboxClick(dogData.id, !deleteCheckBoxChecked);
         setDeleteCheckBoxChecked(!deleteCheckBoxChecked);
     };
 
+    const SelectDogAndShowAllCheckboxes = () => {
+        setCheckboxVisible(true);
+        // TODO
+    };
+
     return (
-        <View style={styles.dogCard}>
-            <DogDeleteModal
-                visible={deletionModalIsVisible}
-                title="Deleting dog"
-                text="Do you really want to delete dog?"
-                type="DOG_MODAL_DELETE"
-            />
-            <DogEditModal
-                visible={editModalIsVisible}
-                dogData={dogData}
-            />
-            <View>
-                {imageUrlFromStorage
-                    ? (
-                        <Image
-                            style={styles.dogImage}
-                            resizeMode="contain"
-                            source={{
-                                uri: `data:image/png;base64,${imageUrlFromStorage}`,
-                            }}
-                        />
-                    )
-                    : (
-                        <Image
-                            style={styles.dogImage}
-                            resizeMode="contain"
-                            source={{
-                                uri: dogData.imageUrl,
-                            }}
-                        />
-                    )}
-                {deleteCheckBoxChecked
-                    ? (
-                        <TouchableOpacity
-                            onPress={handleDeleteCheckBox}
-                            style={[styles.dogIcon, {
-                                top: -238,
-                                right: 110,
-                            }]}
-                        >
-                            <Icon
-                                name="checkbox-marked-outline"
-                                size={30}
-                                color="green"
-                            />
-                        </TouchableOpacity>
-                    )
-                    : (
-                        <TouchableOpacity
-                            onPress={handleDeleteCheckBox}
-                            style={[styles.dogIcon, {
-                                opacity: 0.7,
-                                top: -238,
-                                right: 110,
-                            }]}
-                        >
-                            <Icon
-                                name="checkbox-blank-outline"
-                                size={30}
-                                color="black"
-                            />
-                        </TouchableOpacity>
-                    )}
-
-                <TouchableOpacity
-                    onPress={handleDeleteDogButton}
-                    style={[styles.dogIcon, {
-                        top: -270,
-                        right: -110,
-
-                    }]}
-                >
-                    <Icon
-                        name="delete"
-                        size={30}
-                        color="red"
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={handleEditDogButton}
-                    style={[styles.dogIcon, {
-                        top: -302,
-                        right: -70,
-                    }]}
-                >
-                    <Icon
-                        name="pencil-outline"
-                        size={30}
-                        color="black"
-                    />
-                </TouchableOpacity>
-                <View
-                    style={styles.dogCardText}
-                >
-                    {dogData && dogData.breed
-                        && (
-                            <Text style={styles.dogCardTextView}>
-                                breed:
-                                {' '}
-                                {dogData.breed}
-                            </Text>
-                        )}
-                    {dogData && dogData.subBreed
+        <TouchableOpacity
+            onLongPress={SelectDogAndShowAllCheckboxes}
+        >
+            <View style={styles.dogCard}>
+                <DogDeleteModal
+                    visible={deletionModalIsVisible}
+                    title="Deleting dog"
+                    text="Do you really want to delete dog?"
+                    type="DOG_MODAL_DELETE"
+                />
+                <DogEditModal
+                    visible={editModalIsVisible}
+                    dogData={dogData}
+                />
+                <View>
+                    {imageUrlFromStorage
                         ? (
-                            <Text style={styles.dogCardTextView}>
-                                sub-breed:
-                                {' '}
-                                {dogData.subBreed}
-                            </Text>
+                            <Image
+                                style={styles.dogImage}
+                                resizeMode="contain"
+                                source={{
+                                    uri: `data:image/png;base64,${imageUrlFromStorage}`,
+                                }}
+                            />
                         )
                         : (
-                            <View />
+                            <Image
+                                style={styles.dogImage}
+                                resizeMode="contain"
+                                source={{
+                                    uri: dogData.imageUrl,
+                                }}
+                            />
                         )}
+                    {deleteCheckBoxChecked
+                        ? (
+                            <TouchableOpacity
+                                onPress={handleDeleteCheckBox}
+                                style={[styles.dogIcon, {
+                                    top: -238,
+                                    right: 110,
+                                }]}
+                            >
+                                <Icon
+                                    name="checkbox-marked-outline"
+                                    size={30}
+                                    color="green"
+                                />
+                            </TouchableOpacity>
+                        )
+                        : (
+                            <TouchableOpacity
+                                onPress={handleDeleteCheckBox}
+                                style={[styles.dogIcon, {
+                                    opacity: 0.7,
+                                    top: -238,
+                                    right: 110,
+                                }]}
+                            >
+                                <Icon
+                                    name="checkbox-blank-outline"
+                                    size={30}
+                                    color="black"
+                                />
+                            </TouchableOpacity>
+                        )}
+                    <TouchableOpacity
+                        onPress={handleDeleteDogButton}
+                        style={[styles.dogIcon, {
+                            top: -270,
+                            right: -110,
+
+                        }]}
+                    >
+                        <Icon
+                            name="delete"
+                            size={30}
+                            color="red"
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={handleEditDogButton}
+                        style={[styles.dogIcon, {
+                            top: -302,
+                            right: -70,
+                        }]}
+                    >
+                        <Icon
+                            name="pencil-outline"
+                            size={30}
+                            color="black"
+                        />
+                    </TouchableOpacity>
+                    <View
+                        style={styles.dogCardText}
+                    >
+                        {dogData && dogData.breed
+                            && (
+                                <Text style={styles.dogCardTextView}>
+                                    breed:
+                                    {' '}
+                                    {dogData.breed}
+                                </Text>
+                            )}
+                        {dogData && dogData.subBreed
+                            ? (
+                                <Text style={styles.dogCardTextView}>
+                                    sub-breed:
+                                    {' '}
+                                    {dogData.subBreed}
+                                </Text>
+                            )
+                            : (
+                                <View />
+                            )}
+                    </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 
@@ -207,7 +206,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgb(100, 107, 110)',
         borderColor: 'rgb(100, 107, 110)',
         height: 400,
-        flexBasis: 300,
+        minWidth: 260,
         shadowColor: '#000000',
         shadowOffset: {
             width: 0,
@@ -237,6 +236,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         position: 'relative',
         alignSelf: 'center',
+        borderRadius: 5,
         backgroundColor: 'white',
     },
 });

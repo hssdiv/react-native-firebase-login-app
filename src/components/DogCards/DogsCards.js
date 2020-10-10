@@ -2,9 +2,9 @@ import React from 'react';
 import { DogCardProvider } from '../../context';
 import { Dog } from './Dog';
 
-export const DogsCards = ({ dogs }) => (
-    dogs
-        && dogs.map((dog) => (
+export const DogsCards = ({ dogs }) => {
+    if (dogs) {
+        return (dogs.map((dog) => (
             <DogCardProvider
                 key={dog.id}
             >
@@ -12,5 +12,7 @@ export const DogsCards = ({ dogs }) => (
                     dogData={dog}
                 />
             </DogCardProvider>
-        ))
-);
+        )));
+    }
+    return null;
+};

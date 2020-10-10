@@ -17,7 +17,7 @@ export const TemplateStackNavigator = ({ name, component }) => {
 
     useEffect(() => {
         if (storageStatus) {
-            switch (storageStatus.status) {
+            switch (storageStatus.type) {
                 case 'UPLOADED':
                     setProgressWidth(0);
                     break;
@@ -32,7 +32,13 @@ export const TemplateStackNavigator = ({ name, component }) => {
     }, [storageStatus]);
 
     return (
-        <Stack.Navigator>
+        <Stack.Navigator
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: 'red',
+                },
+            }}
+        >
             <Stack.Screen
                 name={name}
                 component={component}
@@ -42,16 +48,27 @@ export const TemplateStackNavigator = ({ name, component }) => {
                             navigation={navigation}
                         />
                     ),
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
                     headerBackground: () => (
-                        <SafeAreaView>
-                            <View
-                                style={{
-                                    width: progressWidth,
-                                    height: 3,
-                                    backgroundColor: 'red',
-                                }}
-                            />
-                        </SafeAreaView>
+                        <View
+                            style={{
+                                backgroundColor: 'lightgrey',
+                                opacity: 0.3,
+                                flex: 1,
+                            }}
+                        >
+                            <SafeAreaView>
+                                <View
+                                    style={{
+                                        width: progressWidth,
+                                        height: 3,
+                                        backgroundColor: 'red',
+                                    }}
+                                />
+                            </SafeAreaView>
+                        </View>
                     ),
                     headerRight: () => (
                         (name === 'Dogs')

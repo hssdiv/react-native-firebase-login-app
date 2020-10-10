@@ -1,69 +1,36 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DogsScreenUIContext } from '../../context';
+import { DogsContext } from '../../context';
 
 export const DeleteSelectedDogsButton = () => {
-    const { dogsScreenUIStatus, dogsScreenUIMethods } = useContext(DogsScreenUIContext);
-
-    const [disabled, setDisabled] = useState(true);
-
-    useEffect(() => {
-        if (dogsScreenUIStatus) {
-            switch (dogsScreenUIStatus.type) {
-                case 'DELETE_SELECTED_BUTTON_ENABLED':
-                    setDisabled(false);
-                    break;
-                case 'DELETE_SELECTED_BUTTON_DISABLED':
-                    setDisabled(true);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }, [dogsScreenUIStatus]);
+    const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
 
     const handleDeleteSelectedDogs = () => {
-        dogsScreenUIMethods.showDeleteSelectedDogsModal();
+        dogsContextMethods.showDeleteSelectedDogsModal();
     };
     return (
         <View
             style={{ marginEnd: 10 }}
         >
-            {disabled
-                ? (
-                    <TouchableOpacity>
-                        <Icon
-                            name="checkbox-marked-outline"
-                            size={10}
-                            color="red"
-                            style={{ opacity: 0.5 }}
-                        />
-                        <Icon
-                            name="delete"
-                            size={20}
-                            color="red"
-                            style={{ opacity: 0.5 }}
-                        />
-                    </TouchableOpacity>
-                )
-                : (
-                    <TouchableOpacity
-                        onPress={handleDeleteSelectedDogs}
-                    >
+            {dogsContextStatus.selectedDogsButtonIsVisible
+                 && (
+                     <TouchableOpacity
+                         onPress={handleDeleteSelectedDogs}
+                     >
 
-                        <Icon
-                            name="checkbox-marked-outline"
-                            size={10}
-                            color="red"
-                        />
-                        <Icon
-                            name="delete"
-                            size={20}
-                            color="red"
-                        />
-                    </TouchableOpacity>
-                )}
+                         <Icon
+                             name="checkbox-marked-outline"
+                             size={10}
+                             color="red"
+                         />
+                         <Icon
+                             name="delete"
+                             size={20}
+                             color="red"
+                         />
+                     </TouchableOpacity>
+                 )}
         </View>
     );
 };

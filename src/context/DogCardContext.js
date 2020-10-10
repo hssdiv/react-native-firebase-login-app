@@ -28,7 +28,7 @@ export const DogCardProvider = ({ children }) => {
         confirmEdit: (updatedDog) => {
             dispatch({ type: 'MODAL_EDIT_CONFIRMED', updatedDog });
         },
-        closeDeleteModal: () => {
+        closeModal: () => {
             dispatch({ type: 'MODAL_DELETE_CLOSED' });
         },
         closeEditModal: () => {
