@@ -14,5 +14,4 @@ export const DogsCards = ({ dogs }) => {
             </DogCardProvider>
         )));
     }
-    return null;
 };

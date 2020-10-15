@@ -1,7 +1,10 @@
 import React, { useReducer, createContext } from 'react';
-import { getRandomDogFromApi } from '../api/DogApi';
+import { getRandomDog } from '../api/DogApi';
 
 const reducer = (prevState, action) => {
+    console.log('prevState is:');
+    console.log(prevState);
+    console.log(action.type);
     switch (action.type) {
         case 'SHOW_SPINNER':
             return {
@@ -9,7 +12,26 @@ const reducer = (prevState, action) => {
                 type: 'SHOW_SPINNER',
                 spinnerIsVisible: true,
             };
+        /* case 'MERGE_AND_LOAD_DOGS':
+            {
+
+                console.log('test');
+                return {
+                    ...prevState,
+                    type: 'DOGS_LOADED',
+                    spinnerIsVisible: false,
+                    dogs: action.dogs,
+                };
+            }; */
         case 'DOGS_LOADED':
+            console.log('action.dogs is:');
+            console.log(action.dogs);
+            console.log({
+                ...prevState,
+                dogs: action.dogs,
+                type: 'DOGS_LOADED',
+                spinnerIsVisible: false,
+            });
             return {
                 ...prevState,
                 type: 'DOGS_LOADED',
@@ -21,7 +43,7 @@ const reducer = (prevState, action) => {
                 ...prevState,
                 type: 'DOG_CHECKBOX_CLICKED',
                 id: action.id,
-                isChecked: action.isChecked,
+                isSelected: action.isSelected,
             };
         case 'SHOW_DELETE_SELECTED_MODAL':
             return {
@@ -51,8 +73,9 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 type: 'GOT_RANDOM_DOG_FROM_API',
+                spinnerIsVisible: false,
                 dogToAdd: action.dog,
-            }
+            };
         case 'MODAL_ADD_DOG_CONFIRMED_CUSTOM':
             return {
                 ...prevState,
@@ -92,6 +115,18 @@ const reducer = (prevState, action) => {
                 type: 'DELETE_SELECTED_BUTTON_DISABLED',
                 selectedDogsButtonIsVisible: false,
             };
+        case 'SHOW_ALL_CHECKBOXES':
+            return {
+                ...prevState,
+                type: 'SHOW_ALL_CHECKBOXES',
+                checkboxesVisible: true,
+            };
+        case 'HIDE_ALL_CHECKBOXES':
+            return {
+                ...prevState,
+                type: 'HIDE_ALL_CHECKBOXES',
+                checkboxesVisible: false,
+            };
         case 'ERROR':
             return {
                 ...prevState,
@@ -113,6 +148,7 @@ const initialState = ({
     addDogModalIsVisible: false,
     selectedDogsButtonIsVisible: false,
     spinnerIsVisible: true,
+    checkboxesVisible: false,
     dog: {},
     type: '',
 });
@@ -136,9 +172,9 @@ export const DogsProvider = ({ children }) => {
                 type: 'MODAL_ADD_DOG_CONFIRMED_RANDOM',
             });
         },
-        getRandomDog: async () => {
+        getRandomDogFromAPI: async () => {
             dispatch({ type: 'SHOW_SPINNER' });
-            const randomDog = await getRandomDogFromApi();
+            const randomDog = await getRandomDog();
 
             if (!randomDog) {
                 dispatch({
@@ -207,13 +243,12 @@ export const DogsProvider = ({ children }) => {
             dispatch({ type: 'DELETE_SELECTED_BUTTON_DISABLED' });
         },
         setDogsFromFirestore: (dogs, firestoreDogs) => {
-            console.log('detected changes to Dogs list:');
             if (firestoreDogs) {
                 console.log(`Dogs size: ${firestoreDogs.length}`);
                 if (dogs) {
                     const dogsMerged = firestoreDogs.map((firestoreDog) => {
                         const someDog = dogs.find(
-                            (checkedDog) => checkedDog.id === firestoreDog.id,
+                            (selectedDog) => selectedDog.id === firestoreDog.id,
                         );
                         if (someDog) {
                             return {
@@ -223,22 +258,48 @@ export const DogsProvider = ({ children }) => {
                                 ),
                             };
                         }
-                        return firestoreDog;
+                        return {
+                            ...firestoreDog,
+                            selected: false,
+                        };
                     });
-                    dispatch({ type: 'DOGS_LOADED', dogs: dogsMerged });
+                    dispatch({
+                        type: 'DOGS_LOADED',
+                        dogs: dogsMerged,
+                    });
                 } else {
                     const newFirestoreDogs = firestoreDogs.map(
-                        (dog) => ({ ...dog, checked: false }),
+                        (dog) => ({
+                            ...dog,
+                            selected: false,
+                        }),
                     );
-                    dispatch({ type: 'DOGS_LOADED', dogs: newFirestoreDogs });
+                    console.log(newFirestoreDogs);
+                    dispatch({
+                        type: 'DOGS_LOADED',
+                        dogs: newFirestoreDogs,
+                    });
                 }
             }
         },
-        updateDogs: (dogs) => {
-            dispatch({ type: 'DOGS_LOADED', dogs });
+        showAllCheckboxes: () => {
+            dispatch({ type: 'SHOW_ALL_CHECKBOXES' });
         },
-        handleDogCheckboxClick: (id, isChecked) => {
-            dispatch({ type: 'DOG_CHECKBOX_CLICKED', id, isChecked });
+        hideAllCheckboxes: () => {
+            dispatch({ type: 'HIDE_ALL_CHECKBOXES' });
+        },
+        updateDogs: (dogs) => {
+            dispatch({
+                type: 'DOGS_LOADED',
+                dogs,
+            });
+        },
+        handleDogCheckboxClick: (id, isSelected) => {
+            dispatch({
+                type: 'DOG_CHECKBOX_CLICKED',
+                id,
+                isSelected,
+            });
         },
     };
 

@@ -10,27 +10,37 @@ export const DeleteSelectedDogsButton = () => {
         dogsContextMethods.showDeleteSelectedDogsModal();
     };
     return (
-        <View
-            style={{ marginEnd: 10 }}
-        >
-            {dogsContextStatus.selectedDogsButtonIsVisible
+        dogsContextStatus.selectedDogsButtonIsVisible
                  && (
-                     <TouchableOpacity
-                         onPress={handleDeleteSelectedDogs}
+                     <View
+                         style={{
+                             marginEnd: 10,
+                             color: 'red',
+                             backgroundColor: 'white',
+                             overflow: 'hidden',
+                             borderColor: 'white',
+                             borderWidth: 1,
+                             borderRadius: 14,
+                             width: 31,
+                             alignItems: 'center',
+                         }}
                      >
+                         <TouchableOpacity
+                             onPress={handleDeleteSelectedDogs}
+                         >
 
-                         <Icon
-                             name="checkbox-marked-outline"
-                             size={10}
-                             color="red"
-                         />
-                         <Icon
-                             name="delete"
-                             size={20}
-                             color="red"
-                         />
-                     </TouchableOpacity>
-                 )}
-        </View>
+                             <Icon
+                                 name="checkbox-marked-outline"
+                                 size={10}
+                                 color="red"
+                             />
+                             <Icon
+                                 name="delete"
+                                 size={20}
+                                 color="red"
+                             />
+                         </TouchableOpacity>
+                     </View>
+                 )
     );
 };

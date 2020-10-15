@@ -20,7 +20,14 @@ export const DeleteAllDogsButton = () => {
                 <Icon
                     name="delete"
                     size={30}
-                    color="red"
+                    style={{
+                        color: 'red',
+                        backgroundColor: 'white',
+                        overflow: 'hidden',
+                        borderColor: 'white',
+                        borderWidth: 1,
+                        borderRadius: 15,
+                    }}
                 />
             </TouchableOpacity>
         </View>

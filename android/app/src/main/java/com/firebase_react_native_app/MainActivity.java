@@ -5,6 +5,9 @@ import com.facebook.react.ReactActivity;
 import android.content.Intent;
 import android.content.res.Configuration;
 
+import org.devio.rn.splashscreen.SplashScreen;
+import android.os.Bundle; 
+
 public class MainActivity extends ReactActivity {
 
   /**
@@ -15,4 +18,10 @@ public class MainActivity extends ReactActivity {
   protected String getMainComponentName() {
     return "firebase_react_native_app";
   }
+
+  @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.show(this);
+        super.onCreate(savedInstanceState);
+    }
 }

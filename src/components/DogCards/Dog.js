@@ -6,19 +6,20 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DogDeleteModal } from './DogDeleteModal';
 import { DogEditModal } from './DogEditModal';
 import { cloudFirestore } from '../../config/Firebase';
+import { DogCheckbox } from './DogCheckbox';
 import { FirestoreContext, DogCardContext, DogsContext } from '../../context';
 
 export const Dog = ({ dogData }) => {
     const [deletionModalIsVisible, setDeletionModalIsVisible] = useState(false);
     const [editModalIsVisible, setEditModalIsVisible] = useState(false);
-    const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.checked);
+    const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.selected);
     const [imageUrlFromStorage, setImageUrlFromStorage] = useState(null);
 
     const [checkboxVisible, setCheckboxVisible] = useState(false);
 
     const { firestoreMethods } = useContext(FirestoreContext);
     const { dogCardModalStatus } = useContext(DogCardContext);
-    const { dogsContextMethods } = useContext(DogsContext);
+    const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
 
     useEffect(() => {
         const call = async () => {
@@ -31,6 +32,10 @@ export const Dog = ({ dogData }) => {
         };
         call();
     }, []);
+
+    useEffect(() => {
+        setCheckboxVisible(dogsContextStatus.checkboxesVisible);
+    }, [dogsContextStatus]);
 
     useEffect(() => {
         if (dogCardModalStatus) {
@@ -46,11 +51,15 @@ export const Dog = ({ dogData }) => {
                     setEditModalIsVisible(false);
                     const { updatedDog } = dogCardModalStatus;
                     updatedDog.imageUrl = dogData.imageUrl;
-                    cloudFirestore.collection('dogs').doc(dogData.id).set(updatedDog);
+                    cloudFirestore.collection('dogs').doc(dogData.id).update(updatedDog);
                     break;
                 }
                 case 'MODAL_EDIT_CLOSED':
                     setEditModalIsVisible(false);
+                    break;
+                case 'CHECKBOX_CLICKED':
+                    dogsContextMethods.handleDogCheckboxClick(dogData.id, !deleteCheckBoxChecked);
+                    setDeleteCheckBoxChecked(!deleteCheckBoxChecked);
                     break;
                 default:
                     break;
@@ -66,19 +75,15 @@ export const Dog = ({ dogData }) => {
         setEditModalIsVisible(true);
     };
 
-    const handleDeleteCheckBox = () => {
-        dogsContextMethods.handleDogCheckboxClick(dogData.id, !deleteCheckBoxChecked);
-        setDeleteCheckBoxChecked(!deleteCheckBoxChecked);
-    };
-
-    const SelectDogAndShowAllCheckboxes = () => {
-        setCheckboxVisible(true);
-        // TODO
+    const selectDogAndShowAllCheckboxes = () => {
+        dogsContextMethods.handleDogCheckboxClick(dogData.id, true);
+        dogsContextMethods.showAllCheckboxes();
+        setDeleteCheckBoxChecked(true);
     };
 
     return (
         <TouchableOpacity
-            onLongPress={SelectDogAndShowAllCheckboxes}
+            onLongPress={selectDogAndShowAllCheckboxes}
         >
             <View style={styles.dogCard}>
                 <DogDeleteModal
@@ -111,43 +116,15 @@ export const Dog = ({ dogData }) => {
                                 }}
                             />
                         )}
-                    {deleteCheckBoxChecked
-                        ? (
-                            <TouchableOpacity
-                                onPress={handleDeleteCheckBox}
-                                style={[styles.dogIcon, {
-                                    top: -238,
-                                    right: 110,
-                                }]}
-                            >
-                                <Icon
-                                    name="checkbox-marked-outline"
-                                    size={30}
-                                    color="green"
-                                />
-                            </TouchableOpacity>
-                        )
-                        : (
-                            <TouchableOpacity
-                                onPress={handleDeleteCheckBox}
-                                style={[styles.dogIcon, {
-                                    opacity: 0.7,
-                                    top: -238,
-                                    right: 110,
-                                }]}
-                            >
-                                <Icon
-                                    name="checkbox-blank-outline"
-                                    size={30}
-                                    color="black"
-                                />
-                            </TouchableOpacity>
-                        )}
+                    <DogCheckbox
+                        visible={checkboxVisible}
+                        isChecked={deleteCheckBoxChecked}
+                    />
                     <TouchableOpacity
                         onPress={handleDeleteDogButton}
                         style={[styles.dogIcon, {
-                            top: -270,
-                            right: -110,
+                            top: 5,
+                            right: 5,
 
                         }]}
                     >
@@ -160,8 +137,8 @@ export const Dog = ({ dogData }) => {
                     <TouchableOpacity
                         onPress={handleEditDogButton}
                         style={[styles.dogIcon, {
-                            top: -302,
-                            right: -70,
+                            top: 5,
+                            right: 40,
                         }]}
                     >
                         <Icon
@@ -204,6 +181,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 10,
         backgroundColor: 'rgb(100, 107, 110)',
+        position: 'relative',
         borderColor: 'rgb(100, 107, 110)',
         height: 400,
         minWidth: 260,
@@ -234,7 +212,7 @@ const styles = StyleSheet.create({
     dogIcon: {
         borderColor: 'white',
         borderWidth: 1,
-        position: 'relative',
+        position: 'absolute',
         alignSelf: 'center',
         borderRadius: 5,
         backgroundColor: 'white',

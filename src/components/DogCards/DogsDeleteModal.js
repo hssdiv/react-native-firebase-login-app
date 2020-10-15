@@ -14,7 +14,7 @@ export const DogsDeleteModal = ({
     };
 
     const handleDeleteConfirmButton = () => {
-        if (type === 'MODAL_DELETE_CHECKED_PRESSED') {
+        if (type === 'MODAL_DELETE_SELECTED_PRESSED') {
             dogsContextMethods.confirmDeleteSelectedPressed();
         } else {
             dogsContextMethods.confirmDeleteAllPressed();

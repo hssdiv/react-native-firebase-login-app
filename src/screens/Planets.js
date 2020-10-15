@@ -46,8 +46,10 @@ export const Planets = () => {
                         />
                     </ScrollView>
                 )
-                : (!error
-                    && <Spinner />
+                : (
+                    <Spinner
+                        visible={!error}
+                    />
                 )}
         </View>
     );

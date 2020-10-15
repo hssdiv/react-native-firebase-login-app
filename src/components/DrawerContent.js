@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AuthContext } from '../context';
 
-export const CustomDrawerContent = (props) => {
+export const DrawerContent = (props) => {
     const { authMethods } = useContext(AuthContext);
 
     return (
@@ -13,6 +13,7 @@ export const CustomDrawerContent = (props) => {
                 style={{
                     height: 120,
                     backgroundColor: 'rgb(100, 107, 110)',
+                    marginTop: -4,
                 }}
 
             >

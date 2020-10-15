@@ -8,7 +8,7 @@ import { FirebaseStorageContext } from '../context';
 
 export const Stack = createStackNavigator();
 
-export const TemplateStackNavigator = ({ name, component }) => {
+export const StackNavigatorTemplate = ({ name, component }) => {
     const { storageStatus } = useContext(FirebaseStorageContext);
 
     const [progressWidth, setProgressWidth] = useState(0);
@@ -50,12 +50,13 @@ export const TemplateStackNavigator = ({ name, component }) => {
                     ),
                     headerTitleStyle: {
                         fontWeight: 'bold',
+                        color: 'white',
                     },
                     headerBackground: () => (
                         <View
                             style={{
-                                backgroundColor: 'lightgrey',
-                                opacity: 0.3,
+                                backgroundColor: 'rgb(100, 107, 110)',
+                                opacity: 1,
                                 flex: 1,
                             }}
                         >

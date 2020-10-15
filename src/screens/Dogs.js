@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { View, StyleSheet, Text, Platform } from 'react-native';
+import notifee, { IOSAuthorizationStatus, EventType } from '@notifee/react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import {
-    View, StyleSheet, ScrollView,
-} from 'react-native';
-import {
-    AddDogButton, DogsDeleteModal, DogAddModal, DogsCards,
+    AddDogButton, DogsDeleteModal, DogAddModal, Dog,
 } from '../components/DogCards';
 import { cloudFirestore as firestore } from '../config/Firebase';
 import { Spinner, SimpleErrorMessage } from '../components';
 import {
     DogsContext, FirebaseStorageContext, FirestoreContext,
+    DogCardProvider,
 } from '../context';
 import { useScreenOrientation } from '../util/useScreenOrientation';
 
@@ -17,26 +18,73 @@ export const Dogs = () => {
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null);
 
     const orientation = useScreenOrientation();
+    const [dogsColumnsNumber, setDogsColumnsNumber] = useState(1);
 
     const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
 
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext);
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
 
+    const [dogsListener, setDogsListener] = useState(null);
+
+    const dogsPerPage = 3;
+    const [currentDogsLoaded, setCurrentDogsLoaded] = useState(0);
+
+    const [dogsListenerData, setDogsListenerData] = useState(null);
+
     useEffect(() => {
-        console.log('fetching Dogs from fs...');
-        const dogListenerUnsubscribe = firestore.collection('dogs').onSnapshot((snapshot) => {
-            const dogsData = [];
-            snapshot.forEach((doc) => dogsData.push(({ id: doc.id, ...doc.data() })));
-            dogsContextMethods.setDogsFromFirestore(dogs, dogsData);
-        });
-        return dogListenerUnsubscribe;
+        requestNotificationPermission();
+        console.log('loading Dogs from firestore...');
+        loadMoreDogs();
     }, []);
+
+    useEffect(() => {
+        if (orientation === 'PORTRAIT') {
+            setDogsColumnsNumber(1);
+        } else {
+            setDogsColumnsNumber(2);
+        }
+    }, [orientation]);
+
+    const loadMoreDogs = () => {
+        if (dogsListener) {
+            dogsListener();
+        }
+        setDogsListener(() => getDogsListener(currentDogsLoaded + dogsPerPage));
+    };
+
+    const getDogsListener = (limit) => firestore.collection('dogs')
+        .limit(limit)
+        .orderBy('timestamp', 'desc')
+        .onSnapshot((snapshot) => {
+            const dogsData = [];
+            setCurrentDogsLoaded(snapshot.docs.length);
+
+            snapshot.forEach(
+                (doc) => (
+                    dogsData.push(
+                        {
+                            id: doc.id, ...doc.data(),
+                        },
+                    )
+                ),
+            );
+
+            // dogsContextMethods.setDogsFromFirestore(dogs, dogsData);
+            setDogsListenerData(dogsData);
+        });
+
+    useEffect(() => {
+        if (dogsListenerData) {
+            dogsContextMethods.setDogsFromFirestore(dogs, dogsListenerData);
+            dogsListenerData(null);
+        }
+    }, [dogsListenerData]);
 
     useEffect(() => {
         switch (dogsContextStatus?.type) {
             case 'MODAL_ADD_DOG_CONFIRMED_RANDOM':
-                dogsContextMethods.getRandomDog();
+                dogsContextMethods.getRandomDogFromAPI();
                 break;
             case 'GOT_RANDOM_DOG_FROM_API':
                 try {
@@ -55,20 +103,23 @@ export const Dogs = () => {
                 firestoreMethods.deleteAll();
                 break;
             case 'DOGS_LOADED':
+                // console.log('dogsContextStatus.dogs:');
+                // console.log(dogsContextStatus.dogs);
                 setDogs(dogsContextStatus.dogs);
                 break;
             case 'DOG_CHECKBOX_CLICKED':
                 const { id } = dogsContextStatus;
-                const { isChecked } = dogsContextStatus;
-                const checkedDog = dogs.find((dog) => dog.id === id);
-                checkedDog.checked = isChecked;
-                const dogsWithCheckedDog = dogs.map((dog) => {
-                    if (dog.id === checkedDog.id) {
-                        return checkedDog;
+                const { isSelected } = dogsContextStatus;
+                const dogsWithSelectedDog = dogs.map((dog) => {
+                    if (dog.id === id) {
+                        return {
+                            ...dog,
+                            selected: isSelected,
+                        };
                     }
                     return dog;
                 });
-                dogsContextMethods.updateDogs(dogsWithCheckedDog);
+                dogsContextMethods.updateDogs(dogsWithSelectedDog);
                 break;
             case 'ERROR':
                 setSimpleErrorMsg(dogsContextStatus.error);
@@ -86,15 +137,76 @@ export const Dogs = () => {
             case 'ERROR':
                 setSimpleErrorMsg(storageStatus.errorMessage);
                 break;
+            case 'UPDATE_PROGRESS_BAR':
+                if (Platform.OS === 'android') {
+                    displayNotification('Custom dog picture:', '', 'PROGRESS', storageStatus.percentage);
+                }
+                break;
+            case 'DOG_PICTURE_UPLOADED':
+                displayNotification('Custom dog picture:', 'upload complete');
+                break;
             default:
                 break;
         }
     }, [storageStatus]);
 
+    useEffect(() => notifee.onForegroundEvent(({ type }) => {
+        if (type === EventType.PRESS) {
+            notifee.cancelNotification('progressNotification');
+        }
+    }), []);
+
+    useEffect(() => notifee.onBackgroundEvent(({ type }) => {
+        if (type === EventType.PRESS) {
+            notifee.cancelNotification('progressNotification');
+        }
+    }), []);
+
+    const displayNotification = async (notificationTitle, notificationText, type, progress) => {
+        const channelId = await notifee.createChannel({
+            id: 'default',
+            name: 'Default Channel',
+        });
+
+        if (type === 'PROGRESS') {
+            await notifee.displayNotification({
+                title: notificationTitle,
+                id: 'progressNotification',
+                android: {
+                    channelId,
+                    progress: {
+                        max: 100,
+                        current: progress,
+                    },
+                },
+            });
+        } else {
+            await notifee.displayNotification({
+                id: 'progressNotification',
+                title: notificationTitle,
+                body: notificationText,
+                android: {
+                    channelId,
+                },
+            });
+        }
+    };
+    const requestNotificationPermission = async () => {
+        const settings = await notifee.requestPermission();
+        if (settings.authorizationStatus >= IOSAuthorizationStatus.AUTHORIZED) {
+            console.log('Permissions: IOSAuthorizationStatus.AUTHORIZED');
+        } else {
+            console.log('User declined permissions');
+        }
+    };
+
     useEffect(() => {
         switch (firestoreStatus?.type) {
             case 'ERROR':
                 setSimpleErrorMsg(firestoreStatus.errorMessage);
+                break;
+            case 'FIRESTORE_BATCH_DELETE':
+                dogsContextMethods.hideAllCheckboxes();
                 break;
             case 'DELETE_FROM_STORAGE':
                 storageMethods.deleteByUrl(firestoreStatus.urlToDeleteFromStorage);
@@ -105,7 +217,7 @@ export const Dogs = () => {
     }, [firestoreStatus]);
 
     useEffect(() => {
-        if ((dogs) && (dogs.find((checkedDog) => checkedDog.checked === true))) {
+        if ((dogs) && (dogs.find((selectedDog) => selectedDog.selected === true))) {
             dogsContextMethods.deleteSelectedButtonEnabled();
         } else {
             dogsContextMethods.deleteSelectedButtonDisabled();
@@ -123,7 +235,7 @@ export const Dogs = () => {
                 visible={dogsContextStatus.deleteModalIsVisible}
                 title="Delete dog(s)"
                 text="Are you sure you want to delete selected dog(s)?"
-                type="MODAL_DELETE_CHECKED_PRESSED"
+                type="MODAL_DELETE_SELECTED_PRESSED"
             />
             <DogsDeleteModal
                 visible={dogsContextStatus.deleteAllModalIsVisible}
@@ -135,23 +247,41 @@ export const Dogs = () => {
                 error={simpleErrorMsg}
                 onPress={() => { setSimpleErrorMsg(null); }}
             />
-            {orientation === 'PORTRAIT'
-                ? (
-                    <ScrollView
-                        contentContainerStyle={styles.dogsContainerPortrait}
-                    >
-                        <DogsCards dogs={dogs} />
-                    </ScrollView>
+            {
+                dogs
+                && (
+                    dogs.length !== 0
+                        ? (
+                            <FlatList
+                                contentContainerStyle={styles.dogsContainer}
+                                numColumns={dogsColumnsNumber}
+                                key={dogsColumnsNumber}
+                                keyExtractor={(dog) => dog.id}
+                                onEndReached={loadMoreDogs}
+                                onEndReachedThreshold={0.1}
+                                data={dogs}
+                                renderItem={
+                                    ({ item }) => (
+                                        <DogCardProvider>
+                                            <Dog
+                                                dogData={item}
+                                            />
+                                        </DogCardProvider>
+                                    )
+                                }
+                            />
+                        )
+                        : (
+                            <View
+                                style={styles.hint}
+                            >
+                                <Text>
+                                    Add dog(s) to display.
+                                </Text>
+                            </View>
+                        )
                 )
-                : (
-                    <ScrollView
-                        contentContainerStyle={styles.dogsContainerLandscape}
-                    >
-                        <DogsCards
-                            dogs={dogs}
-                        />
-                    </ScrollView>
-                )}
+            }
             <AddDogButton />
             <Spinner
                 visible={
@@ -165,18 +295,17 @@ export const Dogs = () => {
 };
 
 const styles = StyleSheet.create({
-    dogsContainerPortrait: {
+    dogsContainer: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
+        alignSelf: 'center',
         marginStart: 50,
         marginEnd: 50,
     },
-    dogsContainerLandscape: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        alignItems: 'center',
+    hint: {
+        flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
     },
 });

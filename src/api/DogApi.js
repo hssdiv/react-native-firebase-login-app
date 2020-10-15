@@ -1,4 +1,4 @@
-export const getRandomDogFromApi = async () => {
+export const getRandomDog = async () => {
     try {
         const response = await fetch('https://dog.ceo/api/breeds/image/random');
         if (response) {

@@ -1,5 +1,5 @@
 import React, { useReducer, createContext } from 'react';
-import { cloudFirestore as firestore } from '../config/Firebase';
+import { firebaseRef as firebase, cloudFirestore as firestore } from '../config/Firebase';
 
 const reducer = (prevState, action) => {
     switch (action.type) {
@@ -29,7 +29,7 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 spinnerIsVisible: false,
-                type: 'BATCH_DELETED',
+                type: 'FIRESTORE_BATCH_DELETE',
             };
         case 'FIRESTORE_UPDATE':
             console.log('firestore reducer: DOG_COLLECTION_UPDATED');
@@ -68,7 +68,9 @@ export const FirestoreProvider = ({ children }) => {
         addDogToFirestore: async (dogToAdd) => {
             try {
                 dispatch({ type: 'SHOW_SPINNER' });
-                firestore.collection('dogs').add(dogToAdd);
+                firestore.collection('dogs').add({ ...dogToAdd, timestamp: firebase.firestore.Timestamp.fromDate(new Date()) });
+
+                // .add({...item, created: firebase.firestore.Timestamp.fromDate(new Date()) })
                 dispatch({ type: 'FIRESTORE_CREATE' });
                 return { result: true };
             } catch (error) {
@@ -96,13 +98,14 @@ export const FirestoreProvider = ({ children }) => {
                     dispatch({ type: 'FIRESTORE_ERROR', errorMessage: error.message });
                 });
         },
-        deleteSelected: (dogsChecked) => {
+        deleteSelected: (dogs) => {
+            const selectedDogs = dogs.filter((dog) => dog.selected);
             firestore.collection('dogs').get().then((querySnapshot) => {
                 dispatch({ type: 'SHOW_SPINNER' });
                 const batch = firestore.batch();
 
                 querySnapshot.forEach((doc) => {
-                    if (dogsChecked.find((checkedDog) => ((doc.id === checkedDog.id))).checked) {
+                    if (selectedDogs.find((selectedDog) => (doc.id === selectedDog.id))) {
                         batch.delete(doc.ref);
 
                         if (doc.custom) {

@@ -8,7 +8,7 @@ const reducer = (prevState, action) => {
             console.log('storage reducer: DOG_PICTURE_UPLOADED');
             return {
                 ...prevState,
-                type: 'UPLOADED',
+                type: 'DOG_PICTURE_UPLOADED',
             };
         case 'DOG_PICTURE_DELETED':
             console.log('storage reducer: DOG_PICTURE_DELETED');
@@ -27,7 +27,7 @@ const reducer = (prevState, action) => {
         case 'UPDATE_PROGRESS_BAR':
             return {
                 ...prevState,
-                type: 'PROGRESS',
+                type: 'UPDATE_PROGRESS_BAR',
                 percentage: action.percentage,
             };
         case 'SHOW_SPINNER':
@@ -76,15 +76,11 @@ export const FirebaseStorageProvider = ({ children }) => {
                     (err) => {
                         console.error(`upload progress error:${err}`);
                         dispatch({ type: 'ERROR', errorMessage: err.message });
-                    },
-
-                    async () => {
-                        console.log('storage: upload complete');
-                        dispatch({ type: 'DOG_PICTURE_UPLOADED' });
                     });
 
                 task.then(async () => {
                     console.log('storage upload task completed!');
+                    dispatch({ type: 'DOG_PICTURE_UPLOADED' });
                     const fileUrl = await fileRef.getDownloadURL();
 
                     const addCustomdDog = {

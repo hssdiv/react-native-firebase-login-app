@@ -10,6 +10,8 @@ const reducer = (state, action) => {
             return { type: 'MODAL_DELETE_CLOSED' };
         case 'MODAL_EDIT_CLOSED':
             return { type: 'MODAL_EDIT_CLOSED' };
+        case 'CHECKBOX_CLICKED':
+            return { type: 'CHECKBOX_CLICKED' };
         default:
             return state;
     }
@@ -33,6 +35,9 @@ export const DogCardProvider = ({ children }) => {
         },
         closeEditModal: () => {
             dispatch({ type: 'MODAL_EDIT_CLOSED' });
+        },
+        handleCheckboxClick: () => {
+            dispatch({ type: 'CHECKBOX_CLICKED' });
         },
     };
 
