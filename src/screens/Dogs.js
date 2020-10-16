@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, Platform } from 'react-native';
+import {
+    View, StyleSheet, Text, Platform,
+} from 'react-native';
 import notifee, { IOSAuthorizationStatus, EventType } from '@notifee/react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import {
@@ -77,7 +79,7 @@ export const Dogs = () => {
     useEffect(() => {
         if (dogsListenerData) {
             dogsContextMethods.setDogsFromFirestore(dogs, dogsListenerData);
-            dogsListenerData(null);
+            setDogsListenerData(null);
         }
     }, [dogsListenerData]);
 
@@ -103,8 +105,6 @@ export const Dogs = () => {
                 firestoreMethods.deleteAll();
                 break;
             case 'DOGS_LOADED':
-                // console.log('dogsContextStatus.dogs:');
-                // console.log(dogsContextStatus.dogs);
                 setDogs(dogsContextStatus.dogs);
                 break;
             case 'DOG_CHECKBOX_CLICKED':
@@ -221,6 +221,7 @@ export const Dogs = () => {
             dogsContextMethods.deleteSelectedButtonEnabled();
         } else {
             dogsContextMethods.deleteSelectedButtonDisabled();
+            dogsContextMethods.hideAllCheckboxes();
         }
     }, [dogs]);
 
@@ -290,7 +291,7 @@ export const Dogs = () => {
                     || firestoreStatus.spinnerIsVisible
                 }
             />
-        </View>
+        </View >
     );
 };
 

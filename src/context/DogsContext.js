@@ -2,9 +2,6 @@ import React, { useReducer, createContext } from 'react';
 import { getRandomDog } from '../api/DogApi';
 
 const reducer = (prevState, action) => {
-    console.log('prevState is:');
-    console.log(prevState);
-    console.log(action.type);
     switch (action.type) {
         case 'SHOW_SPINNER':
             return {
@@ -12,26 +9,7 @@ const reducer = (prevState, action) => {
                 type: 'SHOW_SPINNER',
                 spinnerIsVisible: true,
             };
-        /* case 'MERGE_AND_LOAD_DOGS':
-            {
-
-                console.log('test');
-                return {
-                    ...prevState,
-                    type: 'DOGS_LOADED',
-                    spinnerIsVisible: false,
-                    dogs: action.dogs,
-                };
-            }; */
         case 'DOGS_LOADED':
-            console.log('action.dogs is:');
-            console.log(action.dogs);
-            console.log({
-                ...prevState,
-                dogs: action.dogs,
-                type: 'DOGS_LOADED',
-                spinnerIsVisible: false,
-            });
             return {
                 ...prevState,
                 type: 'DOGS_LOADED',
@@ -274,7 +252,6 @@ export const DogsProvider = ({ children }) => {
                             selected: false,
                         }),
                     );
-                    console.log(newFirestoreDogs);
                     dispatch({
                         type: 'DOGS_LOADED',
                         dogs: newFirestoreDogs,
