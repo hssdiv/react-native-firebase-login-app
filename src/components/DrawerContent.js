@@ -11,9 +11,10 @@ export const DrawerContent = (props) => {
         <DrawerContentScrollView {...props}>
             <View
                 style={{
-                    height: 120,
+                    height: 180,
                     backgroundColor: 'rgb(100, 107, 110)',
-                    marginTop: -4,
+                    marginTop: -60,
+                    justifyContent: 'flex-end',
                 }}
 
             >

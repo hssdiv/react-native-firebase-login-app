@@ -10,7 +10,7 @@ export const DrawerButton = ({ navigation }) => (
             style={{ marginStart: 10 }}
         >
             <Text
-                style={{ color: 'white', fontSize: 16 }}
+                style={{ color: 'white', fontSize: 30 }}
             >
                 &#9776;
             </Text>

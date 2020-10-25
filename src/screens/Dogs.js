@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-    View, StyleSheet, Text, Platform,
+    View, StyleSheet, Text, Platform, RefreshControl,
 } from 'react-native';
 import notifee, { IOSAuthorizationStatus, EventType } from '@notifee/react-native';
 import { FlatList } from 'react-native-gesture-handler';
@@ -150,6 +150,15 @@ export const Dogs = () => {
         }
     }, [storageStatus]);
 
+    const requestNotificationPermission = async () => {
+        const settings = await notifee.requestPermission();
+        if (settings.authorizationStatus >= IOSAuthorizationStatus.AUTHORIZED) {
+            console.log('Permissions: IOSAuthorizationStatus.AUTHORIZED');
+        } else {
+            console.log('User declined permissions');
+        }
+    };
+
     useEffect(() => notifee.onForegroundEvent(({ type }) => {
         if (type === EventType.PRESS) {
             notifee.cancelNotification('progressNotification');
@@ -164,39 +173,47 @@ export const Dogs = () => {
 
     const displayNotification = async (notificationTitle, notificationText, type, progress) => {
         const channelId = await notifee.createChannel({
-            id: 'default',
-            name: 'Default Channel',
+            id: 'uploadChannel',
+            name: 'Upload channel',
         });
-
-        if (type === 'PROGRESS') {
-            await notifee.displayNotification({
-                title: notificationTitle,
-                id: 'progressNotification',
-                android: {
-                    channelId,
-                    progress: {
-                        max: 100,
-                        current: progress,
+        if (progress !== 100) {
+            if (type === 'PROGRESS') {
+                console.log('displaying upload progress');
+                await notifee.displayNotification({
+                    title: notificationTitle,
+                    id: 'progressNotification',
+                    android: {
+                        channelId,
+                        progress: {
+                            max: 100,
+                            current: progress,
+                        },
                     },
-                },
-            });
-        } else {
-            await notifee.displayNotification({
-                id: 'progressNotification',
-                title: notificationTitle,
-                body: notificationText,
-                android: {
-                    channelId,
-                },
-            });
-        }
-    };
-    const requestNotificationPermission = async () => {
-        const settings = await notifee.requestPermission();
-        if (settings.authorizationStatus >= IOSAuthorizationStatus.AUTHORIZED) {
-            console.log('Permissions: IOSAuthorizationStatus.AUTHORIZED');
-        } else {
-            console.log('User declined permissions');
+                });
+                console.log('displaying upload progress #2');
+            } else {
+                console.log('displaying upload complete');
+                await notifee.displayNotification({
+                    title: notificationTitle,
+                    id: 'progressNotification',
+                    android: {
+                        channelId,
+                        progress: {
+                            max: 100,
+                            current: 100,
+                        },
+                    },
+                });
+                await notifee.displayNotification({
+                    id: 'progressNotification',
+                    title: notificationTitle,
+                    body: notificationText,
+                    android: {
+                        channelId,
+                    },
+                });
+                console.log('displaying upload complete #2');
+            }
         }
     };
 
@@ -261,6 +278,15 @@ export const Dogs = () => {
                                 onEndReached={loadMoreDogs}
                                 onEndReachedThreshold={0.1}
                                 data={dogs}
+                                /* ListFooterComponent={() => <Spinner visible />}
+                                ListFooterComponentStyle={{ marginTop: 20 }}
+                                refreshControl={(
+                                    <RefreshControl
+                                        colors={['#9Bd35A', '#689F38']}
+                                        refreshing
+                                        onRefresh={() => console.log('vau')}
+                                    />
+                                )} */
                                 renderItem={
                                     ({ item }) => (
                                         <DogCardProvider>
@@ -291,7 +317,7 @@ export const Dogs = () => {
                     || firestoreStatus.spinnerIsVisible
                 }
             />
-        </View >
+        </View>
     );
 };
 
