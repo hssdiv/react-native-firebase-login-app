@@ -3,6 +3,12 @@ import { firebaseRef as firebase, cloudFirestore as firestore } from '../config/
 
 const reducer = (prevState, action) => {
     switch (action.type) {
+        case 'LOADED_DOGS_FROM_FIRESTORE':
+            return {
+                ...prevState,
+                type: 'LOADED_DOGS_FROM_FIRESTORE',
+                dogsFromFirestore: action.dogsFromFirestore,
+            };
         case 'FIRESTORE_CREATE':
             console.log('firestore reducer: DOG_COLECTION_CREATED');
             return {
@@ -61,20 +67,52 @@ export const FirestoreContext = createContext();
 export const FirestoreProvider = ({ children }) => {
     const initialState = {
         spinnerIsVisible: false,
+        currentDogsLoaded: 0,
     };
     const [firestoreStatus, dispatch] = useReducer(reducer, initialState);
 
     const firestoreMethods = {
+        loadDogsFromFirestore: (amount) => {
+            firestore.collection('dogs')
+                .limit(amount)
+                .orderBy('timestamp', 'desc')
+                .get()
+                .then((snapshot) => {
+                    const dogsData = [];
+                    const currentDogsLoaded = snapshot.docs.length;
+
+                    snapshot.forEach(
+                        (doc) => (
+                            dogsData.push(
+                                {
+                                    id: doc.id, ...doc.data(),
+                                },
+                            )
+                        ),
+                    );
+                    dispatch({
+                        type: 'LOADED_DOGS_FROM_FIRESTORE',
+                        currentDogsLoaded,
+                        dogsFromFirestore: dogsData,
+                    });
+                });
+        },
         addDogToFirestore: async (dogToAdd) => {
             try {
                 dispatch({ type: 'SHOW_SPINNER' });
-                firestore.collection('dogs').add({ ...dogToAdd, timestamp: firebase.firestore.Timestamp.fromDate(new Date()) });
+                firestore.collection('dogs').add({
+                    ...dogToAdd,
+                    timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
+                });
 
                 // .add({...item, created: firebase.firestore.Timestamp.fromDate(new Date()) })
                 dispatch({ type: 'FIRESTORE_CREATE' });
                 return { result: true };
             } catch (error) {
-                dispatch({ type: 'FIRESTORE_ERROR', errorMessage: error.message });
+                dispatch({
+                    type: 'FIRESTORE_ERROR',
+                    errorMessage: error.message,
+                });
                 return { result: false, errorMessage: error.message };
             }
         },
@@ -95,7 +133,10 @@ export const FirestoreProvider = ({ children }) => {
             })
                 .catch((error) => {
                     console.error('Error removing dog: ', error);
-                    dispatch({ type: 'FIRESTORE_ERROR', errorMessage: error.message });
+                    dispatch({
+                        type: 'FIRESTORE_ERROR',
+                        errorMessage: error.message,
+                    });
                 });
         },
         deleteSelected: (dogs) => {

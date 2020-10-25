@@ -10,7 +10,7 @@ export const DeleteSelectedDogsButton = () => {
         dogsContextMethods.showDeleteSelectedDogsModal();
     };
     return (
-        dogsContextStatus.selectedDogsButtonIsVisible
+        dogsContextStatus.deleteSelectedDogsButtonIsVisible
                  && (
                      <View
                          style={{

@@ -2,18 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
     View, StyleSheet, Text, Platform, RefreshControl,
 } from 'react-native';
-import notifee, { IOSAuthorizationStatus, EventType } from '@notifee/react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import {
     AddDogButton, DogsDeleteModal, DogAddModal, Dog,
 } from '../components/DogCards';
-import { cloudFirestore as firestore } from '../config/Firebase';
 import { Spinner, SimpleErrorMessage } from '../components';
 import {
     DogsContext, FirebaseStorageContext, FirestoreContext,
     DogCardProvider,
 } from '../context';
 import { useScreenOrientation } from '../util/useScreenOrientation';
+import { requestNotificationPermission, setUpNotificationEventListeners, displayNotification } from '../ui';
 
 export const Dogs = () => {
     const [dogs, setDogs] = useState(null);
@@ -27,17 +26,13 @@ export const Dogs = () => {
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext);
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
 
-    const [dogsListener, setDogsListener] = useState(null);
-
     const dogsPerPage = 3;
-    const [currentDogsLoaded, setCurrentDogsLoaded] = useState(0);
-
-    const [dogsListenerData, setDogsListenerData] = useState(null);
 
     useEffect(() => {
         requestNotificationPermission();
+        setUpNotificationEventListeners();
         console.log('loading Dogs from firestore...');
-        loadMoreDogs();
+        firestoreMethods.loadDogsFromFirestore(dogsPerPage);
     }, []);
 
     useEffect(() => {
@@ -49,53 +44,18 @@ export const Dogs = () => {
     }, [orientation]);
 
     const loadMoreDogs = () => {
-        // show footer spinner
-
-        firestore.collection('dogs')
-            .limit(currentDogsLoaded + dogsPerPage)
-            .orderBy('timestamp', 'desc')
-            .get()
-            .then((snapshot) => {
-                const dogsData = [];
-                setCurrentDogsLoaded(snapshot.docs.length);
-
-                snapshot.forEach(
-                    (doc) => (
-                        dogsData.push(
-                            {
-                                id: doc.id, ...doc.data(),
-                            },
-                        )
-                    ),
-                );
-
-                dogsContextMethods.setDogsFromFirestore(dogs, dogsData);
-            });
+        // TODO show footer spinner
+        firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentDogsLoaded + dogsPerPage);
     };
 
     useEffect(() => {
         switch (dogsContextStatus?.type) {
-            case 'MODAL_ADD_DOG_CONFIRMED_RANDOM':
-                dogsContextMethods.getRandomDogFromAPI();
-                break;
-            case 'GOT_RANDOM_DOG_FROM_API':
-                try {
-                    firestoreMethods.addDogToFirestore(dogsContextStatus.dogToAdd);
-                } catch (firestoreError) {
-                    setSimpleErrorMsg(firestoreError);
-                }
-                break;
-            case 'MODAL_ADD_DOG_CONFIRMED_CUSTOM':
-                storageMethods.addCustomDog(dogsContextStatus.dogToAdd);
-                break;
-            case 'MODAL_DELETE_SELECTED_PRESSED':
-                firestoreMethods.deleteSelected(dogs);
-                break;
-            case 'MODAL_DELETE_ALL_PRESSED':
-                firestoreMethods.deleteAll();
-                break;
             case 'DOGS_LOADED':
                 setDogs(dogsContextStatus.dogs);
+                // TODO is it possible to move dogs to context? create DOGS_CHANGED(updated?)
+                // (helps to get rid of dog_check_box_clicked also)
+                // to set them again or smth or just get them from context directly
+                // TODO move error(s) to context also?
                 break;
             case 'DOG_CHECKBOX_CLICKED':
                 const { id } = dogsContextStatus;
@@ -122,11 +82,14 @@ export const Dogs = () => {
     useEffect(() => {
         switch (storageStatus?.type) {
             case 'ADD_CUSTOM_DOG_TO_FIRESTORE':
+                // TODO needed
                 firestoreMethods.addDogToFirestore(storageStatus.dogToAdd);
                 break;
             case 'ERROR':
                 setSimpleErrorMsg(storageStatus.errorMessage);
                 break;
+            // TODO call notifications directly from context?
+            // ask for permissions after custom add confirm button?
             case 'UPDATE_PROGRESS_BAR':
                 if (Platform.OS === 'android') {
                     displayNotification('Custom dog picture:', '', 'PROGRESS', storageStatus.percentage);
@@ -140,82 +103,22 @@ export const Dogs = () => {
         }
     }, [storageStatus]);
 
-    const requestNotificationPermission = async () => {
-        const settings = await notifee.requestPermission();
-        if (settings.authorizationStatus >= IOSAuthorizationStatus.AUTHORIZED) {
-            console.log('Permissions: IOSAuthorizationStatus.AUTHORIZED');
-        } else {
-            console.log('User declined permissions');
-        }
-    };
-
-    useEffect(() => notifee.onForegroundEvent(({ type }) => {
-        if (type === EventType.PRESS) {
-            notifee.cancelNotification('progressNotification');
-        }
-    }), []);
-
-    useEffect(() => notifee.onBackgroundEvent(({ type }) => {
-        if (type === EventType.PRESS) {
-            notifee.cancelNotification('progressNotification');
-        }
-    }), []);
-
-    const displayNotification = async (notificationTitle, notificationText, type, progress) => {
-        const channelId = await notifee.createChannel({
-            id: 'uploadChannel',
-            name: 'Upload channel',
-        });
-        if (progress !== 100) {
-            if (type === 'PROGRESS') {
-                console.log('displaying upload progress');
-                await notifee.displayNotification({
-                    title: notificationTitle,
-                    id: 'progressNotification',
-                    android: {
-                        channelId,
-                        progress: {
-                            max: 100,
-                            current: progress,
-                        },
-                    },
-                });
-                console.log('displaying upload progress #2');
-            } else {
-                console.log('displaying upload complete');
-                await notifee.displayNotification({
-                    title: notificationTitle,
-                    id: 'progressNotification',
-                    android: {
-                        channelId,
-                        progress: {
-                            max: 100,
-                            current: 100,
-                        },
-                    },
-                });
-                await notifee.displayNotification({
-                    id: 'progressNotification',
-                    title: notificationTitle,
-                    body: notificationText,
-                    android: {
-                        channelId,
-                    },
-                });
-                console.log('displaying upload complete #2');
-            }
-        }
-    };
-
     useEffect(() => {
         switch (firestoreStatus?.type) {
+            case 'LOADED_DOGS_FROM_FIRESTORE':
+                // TODO looks like it's needed also
+                dogsContextMethods.setDogsFromFirestore(dogs, firestoreStatus.dogsFromFirestore);
+                break;
             case 'ERROR':
                 setSimpleErrorMsg(firestoreStatus.errorMessage);
                 break;
             case 'FIRESTORE_BATCH_DELETE':
+                // TODO probably needed
                 dogsContextMethods.hideAllCheckboxes();
+                refreshDogs();
                 break;
             case 'DELETE_FROM_STORAGE':
+                // TODO probably needed
                 storageMethods.deleteByUrl(firestoreStatus.urlToDeleteFromStorage);
                 break;
             default:
@@ -224,6 +127,7 @@ export const Dogs = () => {
     }, [firestoreStatus]);
 
     useEffect(() => {
+        // TODO i guess this might be moved to context with dogs
         if ((dogs) && (dogs.find((selectedDog) => selectedDog.selected === true))) {
             dogsContextMethods.deleteSelectedButtonEnabled();
         } else {
@@ -233,10 +137,10 @@ export const Dogs = () => {
     }, [dogs]);
 
     const refreshDogs = () => {
-        // TODO
-        // set refresh spinner visible
-        // refresh dogs
-        console.log('vau');
+        console.log('refreshing');
+        firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentDogsLoaded);
+        // TODO on edit of dog, call refreshDogs() to see new edit
+        // TODO update on delete all/selected, and update on add(random/custom)
     };
 
     return (

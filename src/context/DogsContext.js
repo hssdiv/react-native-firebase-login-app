@@ -1,5 +1,7 @@
-import React, { useReducer, createContext } from 'react';
+import React, { useReducer, createContext, useContext } from 'react';
 import { getRandomDog } from '../api/DogApi';
+import { FirestoreContext } from './FirestoreContext';
+import { FirebaseStorageContext } from './FirebaseStorageContext';
 
 const reducer = (prevState, action) => {
     switch (action.type) {
@@ -64,14 +66,12 @@ const reducer = (prevState, action) => {
                 ...prevState,
                 type: 'GOT_RANDOM_DOG_FROM_API',
                 spinnerIsVisible: false,
-                dogToAdd: action.dog,
             };
         case 'MODAL_ADD_DOG_CONFIRMED_CUSTOM':
             return {
                 ...prevState,
                 type: 'MODAL_ADD_DOG_CONFIRMED_CUSTOM',
                 addDogModalIsVisible: false,
-                dogToAdd: action.dog,
             };
         case 'MODAL_CLOSED':
             return {
@@ -97,13 +97,13 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 type: 'DELETE_SELECTED_BUTTON_ENABLED',
-                selectedDogsButtonIsVisible: true,
+                deleteSelectedDogsButtonIsVisible: true,
             };
         case 'DELETE_SELECTED_BUTTON_DISABLED':
             return {
                 ...prevState,
                 type: 'DELETE_SELECTED_BUTTON_DISABLED',
-                selectedDogsButtonIsVisible: false,
+                deleteSelectedDogsButtonIsVisible: false,
             };
         case 'SHOW_ALL_CHECKBOXES':
             return {
@@ -136,17 +136,20 @@ const initialState = ({
     deleteModalIsVisible: false,
     deleteAllModalIsVisible: false,
     addDogModalIsVisible: false,
-    selectedDogsButtonIsVisible: false,
+    deleteSelectedDogsButtonIsVisible: false,
     spinnerIsVisible: true,
     refreshSpinnerIsVisible: false,
     loadMoreSpinnerIsVisible: false,
     checkboxesVisible: false,
-    dog: {},
     type: '',
+    dogs: null,
 });
 
 export const DogsProvider = ({ children }) => {
     const [dogsContextStatus, dispatch] = useReducer(reducer, initialState);
+
+    const { firestoreMethods } = useContext(FirestoreContext);
+    const { storageMethods } = useContext(FirebaseStorageContext);
 
     const dogsContextMethods = {
         showDeleteSelectedDogsModal: () => {
@@ -163,6 +166,7 @@ export const DogsProvider = ({ children }) => {
             dispatch({
                 type: 'MODAL_ADD_DOG_CONFIRMED_RANDOM',
             });
+            dogsContextMethods.getRandomDogFromAPI();
         },
         getRandomDogFromAPI: async () => {
             dispatch({ type: 'SHOW_SPINNER' });
@@ -203,30 +207,40 @@ export const DogsProvider = ({ children }) => {
                 }
                 dispatch({
                     type: 'GOT_RANDOM_DOG_FROM_API',
-                    dog,
                 });
+                try {
+                    firestoreMethods.addDogToFirestore(dog);
+                } catch (firestoreError) {
+                    dispatch({
+                        type: 'ERROR',
+                        error: firestoreError,
+                    });
+                }
             }
         },
         confirmAddCustom: (customDog) => {
             dispatch({ type: 'SHOW_SPINNER' });
             dispatch({
                 type: 'MODAL_ADD_DOG_CONFIRMED_CUSTOM',
-                dog: {
-                    breed: customDog.breed,
-                    subBreed: customDog.subBreed,
-                    dogPicture: customDog.dogPicture,
-                    custom: true,
-                },
             });
+            const dog = {
+                breed: customDog.breed,
+                subBreed: customDog.subBreed,
+                dogPicture: customDog.dogPicture,
+                custom: true,
+            };
+            storageMethods.addCustomDog(dog);
         },
         closeModal: () => {
             dispatch({ type: 'MODAL_CLOSED' });
         },
         confirmDeleteSelectedPressed: () => {
             dispatch({ type: 'MODAL_DELETE_SELECTED_PRESSED' });
+            firestoreMethods.deleteSelected(dogsContextStatus.dogs);
         },
         confirmDeleteAllPressed: () => {
             dispatch({ type: 'MODAL_DELETE_ALL_PRESSED' });
+            firestoreMethods.deleteAll();
         },
         deleteSelectedButtonEnabled: () => {
             dispatch({ type: 'DELETE_SELECTED_BUTTON_ENABLED' });

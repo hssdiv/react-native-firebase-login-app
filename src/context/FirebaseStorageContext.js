@@ -70,12 +70,18 @@ export const FirebaseStorageProvider = ({ children }) => {
                     (snapshot) => {
                         const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log(`uploaded ${percentage}%`);
-                        dispatch({ type: 'UPDATE_PROGRESS_BAR', percentage });
+                        dispatch({
+                            type: 'UPDATE_PROGRESS_BAR',
+                            percentage,
+                        });
                     },
 
                     (err) => {
                         console.error(`upload progress error:${err}`);
-                        dispatch({ type: 'ERROR', errorMessage: err.message });
+                        dispatch({
+                            type: 'ERROR',
+                            errorMessage: err.message,
+                        });
                     });
 
                 task.then(async () => {
@@ -89,12 +95,21 @@ export const FirebaseStorageProvider = ({ children }) => {
                         imageUrl: fileUrl,
                         custom: true,
                     };
-                    dispatch({ type: 'ADD_CUSTOM_DOG_TO_FIRESTORE', dogToAdd: addCustomdDog });
+                    dispatch({
+                        type: 'ADD_CUSTOM_DOG_TO_FIRESTORE',
+                        dogToAdd: addCustomdDog,
+                    });
                 });
                 return { result: true };
             } catch (error) {
-                dispatch({ type: 'ERROR', errorMessage: error.message });
-                return { result: false, errorMessage: error.message };
+                dispatch({
+                    type: 'ERROR',
+                    errorMessage: error.message,
+                });
+                return {
+                    result: false,
+                    errorMessage: error.message,
+                };
             }
         },
         deleteByUrl: async (url) => {
