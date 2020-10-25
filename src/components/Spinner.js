@@ -13,19 +13,20 @@ export const Spinner = ({ visible }) => {
 
     return (
         innerVisibility
-        && (
-            <View style={{
-                position: 'absolute',
-                top: '46%',
-                left: '46%',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-            >
-                <ActivityIndicator
-                    size="large"
-                />
-            </View>
-        )
+            ? (
+                <View style={{
+                    position: 'absolute',
+                    top: '46%',
+                    left: '46%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                >
+                    <ActivityIndicator
+                        size="large"
+                    />
+                </View>
+            )
+            : null
     );
 };

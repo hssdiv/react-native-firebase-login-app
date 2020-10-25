@@ -49,39 +49,29 @@ export const Dogs = () => {
     }, [orientation]);
 
     const loadMoreDogs = () => {
-        if (dogsListener) {
-            dogsListener();
-        }
-        setDogsListener(() => getDogsListener(currentDogsLoaded + dogsPerPage));
+        // show footer spinner
+
+        firestore.collection('dogs')
+            .limit(currentDogsLoaded + dogsPerPage)
+            .orderBy('timestamp', 'desc')
+            .get()
+            .then((snapshot) => {
+                const dogsData = [];
+                setCurrentDogsLoaded(snapshot.docs.length);
+
+                snapshot.forEach(
+                    (doc) => (
+                        dogsData.push(
+                            {
+                                id: doc.id, ...doc.data(),
+                            },
+                        )
+                    ),
+                );
+
+                dogsContextMethods.setDogsFromFirestore(dogs, dogsData);
+            });
     };
-
-    const getDogsListener = (limit) => firestore.collection('dogs')
-        .limit(limit)
-        .orderBy('timestamp', 'desc')
-        .onSnapshot((snapshot) => {
-            const dogsData = [];
-            setCurrentDogsLoaded(snapshot.docs.length);
-
-            snapshot.forEach(
-                (doc) => (
-                    dogsData.push(
-                        {
-                            id: doc.id, ...doc.data(),
-                        },
-                    )
-                ),
-            );
-
-            // dogsContextMethods.setDogsFromFirestore(dogs, dogsData);
-            setDogsListenerData(dogsData);
-        });
-
-    useEffect(() => {
-        if (dogsListenerData) {
-            dogsContextMethods.setDogsFromFirestore(dogs, dogsListenerData);
-            setDogsListenerData(null);
-        }
-    }, [dogsListenerData]);
 
     useEffect(() => {
         switch (dogsContextStatus?.type) {
@@ -242,6 +232,13 @@ export const Dogs = () => {
         }
     }, [dogs]);
 
+    const refreshDogs = () => {
+        // TODO
+        // set refresh spinner visible
+        // refresh dogs
+        console.log('vau');
+    };
+
     return (
         <View
             style={{ flex: 1 }}
@@ -278,15 +275,21 @@ export const Dogs = () => {
                                 onEndReached={loadMoreDogs}
                                 onEndReachedThreshold={0.1}
                                 data={dogs}
-                                /* ListFooterComponent={() => <Spinner visible />}
+                                ListFooterComponent={
+                                    () => (
+                                        <Spinner
+                                            visible={dogsContextStatus.loadMoreSpinnerIsVisible}
+                                        />
+                                    )
+                                }
                                 ListFooterComponentStyle={{ marginTop: 20 }}
                                 refreshControl={(
                                     <RefreshControl
                                         colors={['#9Bd35A', '#689F38']}
-                                        refreshing
-                                        onRefresh={() => console.log('vau')}
+                                        refreshing={dogsContextStatus.refreshSpinnerIsVisible}
+                                        onRefresh={refreshDogs}
                                     />
-                                )} */
+                                )}
                                 renderItem={
                                     ({ item }) => (
                                         <DogCardProvider>

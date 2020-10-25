@@ -9,6 +9,18 @@ const reducer = (prevState, action) => {
                 type: 'SHOW_SPINNER',
                 spinnerIsVisible: true,
             };
+        case 'SHOW_REFRESH_SPINNER':
+            return {
+                ...prevState,
+                type: 'SHOW_REFRESH_SPINNER',
+                refreshSpinnerIsVisible: true,
+            };
+        case 'SHOW_LOAD_MORE_SPINNER':
+            return {
+                ...prevState,
+                type: 'SHOW_LOAD_MORE_SPINNER',
+                loadMoreSpinnerIsVisible: true,
+            };
         case 'DOGS_LOADED':
             return {
                 ...prevState,
@@ -126,6 +138,8 @@ const initialState = ({
     addDogModalIsVisible: false,
     selectedDogsButtonIsVisible: false,
     spinnerIsVisible: true,
+    refreshSpinnerIsVisible: false,
+    loadMoreSpinnerIsVisible: false,
     checkboxesVisible: false,
     dog: {},
     type: '',
