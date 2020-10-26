@@ -15,7 +15,7 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 spinnerIsVisible: false,
-                type: 'DELETED',
+                type: 'DOG_PICTURE_DELETED',
             };
         case 'ADD_CUSTOM_DOG_TO_FIRESTORE':
             return {

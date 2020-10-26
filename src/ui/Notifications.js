@@ -9,7 +9,7 @@ export const requestNotificationPermission = async () => {
     }
 };
 
-export const setUpNotificationEventListeners = () => {
+export const setUpNotificationsEventListeners = () => {
     notifee.onForegroundEvent(({ type }) => {
         if (type === EventType.PRESS) {
             notifee.cancelNotification('progressNotification');

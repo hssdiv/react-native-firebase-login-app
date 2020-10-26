@@ -17,7 +17,7 @@ export const Dog = ({ dogData }) => {
 
     const [checkboxVisible, setCheckboxVisible] = useState(false);
 
-    const { firestoreMethods } = useContext(FirestoreContext);
+    const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
     const { dogCardModalStatus } = useContext(DogCardContext);
     const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
 
@@ -51,7 +51,11 @@ export const Dog = ({ dogData }) => {
                     setEditModalIsVisible(false);
                     const { updatedDog } = dogCardModalStatus;
                     updatedDog.imageUrl = dogData.imageUrl;
-                    cloudFirestore.collection('dogs').doc(dogData.id).update(updatedDog);
+                    cloudFirestore.collection('dogs').doc(dogData.id).update(updatedDog).then(() => {
+                        firestoreMethods.loadDogsFromFirestore(
+                            firestoreStatus.currentNumberOfDogsLoaded,
+                        );
+                    });
                     break;
                 }
                 case 'MODAL_EDIT_CLOSED':

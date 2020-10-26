@@ -28,14 +28,8 @@ const reducer = (prevState, action) => {
                 ...prevState,
                 type: 'DOGS_LOADED',
                 spinnerIsVisible: false,
+                loadMoreSpinnerIsVisible: false,
                 dogs: action.dogs,
-            };
-        case 'DOG_CHECKBOX_CLICKED':
-            return {
-                ...prevState,
-                type: 'DOG_CHECKBOX_CLICKED',
-                id: action.id,
-                isSelected: action.isSelected,
             };
         case 'SHOW_DELETE_SELECTED_MODAL':
             return {
@@ -234,6 +228,9 @@ export const DogsProvider = ({ children }) => {
         closeModal: () => {
             dispatch({ type: 'MODAL_CLOSED' });
         },
+        showLoadMoreSpinner: () => {
+            dispatch({ type: 'SHOW_LOAD_MORE_SPINNER' });
+        },
         confirmDeleteSelectedPressed: () => {
             dispatch({ type: 'MODAL_DELETE_SELECTED_PRESSED' });
             firestoreMethods.deleteSelected(dogsContextStatus.dogs);
@@ -248,12 +245,12 @@ export const DogsProvider = ({ children }) => {
         deleteSelectedButtonDisabled: () => {
             dispatch({ type: 'DELETE_SELECTED_BUTTON_DISABLED' });
         },
-        setDogsFromFirestore: (dogs, firestoreDogs) => {
+        setDogsFromFirestore: (firestoreDogs) => {
             if (firestoreDogs) {
                 console.log(`Dogs size: ${firestoreDogs.length}`);
-                if (dogs) {
+                if (dogsContextStatus.dogs) {
                     const dogsMerged = firestoreDogs.map((firestoreDog) => {
-                        const someDog = dogs.find(
+                        const someDog = dogsContextStatus.dogs.find(
                             (selectedDog) => selectedDog.id === firestoreDog.id,
                         );
                         if (someDog) {
@@ -269,10 +266,7 @@ export const DogsProvider = ({ children }) => {
                             selected: false,
                         };
                     });
-                    dispatch({
-                        type: 'DOGS_LOADED',
-                        dogs: dogsMerged,
-                    });
+                    dogsContextMethods.setDogs(dogsMerged);
                 } else {
                     const newFirestoreDogs = firestoreDogs.map(
                         (dog) => ({
@@ -280,12 +274,16 @@ export const DogsProvider = ({ children }) => {
                             selected: false,
                         }),
                     );
-                    dispatch({
-                        type: 'DOGS_LOADED',
-                        dogs: newFirestoreDogs,
-                    });
+                    dogsContextMethods.setDogs(newFirestoreDogs);
                 }
             }
+        },
+        setDogs: (newDogs) => {
+            dogsContextMethods.updateDeleteSelectedButton(newDogs);
+            dispatch({
+                type: 'DOGS_LOADED',
+                dogs: newDogs,
+            });
         },
         showAllCheckboxes: () => {
             dispatch({ type: 'SHOW_ALL_CHECKBOXES' });
@@ -293,18 +291,28 @@ export const DogsProvider = ({ children }) => {
         hideAllCheckboxes: () => {
             dispatch({ type: 'HIDE_ALL_CHECKBOXES' });
         },
-        updateDogs: (dogs) => {
-            dispatch({
-                type: 'DOGS_LOADED',
-                dogs,
-            });
+        updateDeleteSelectedButton: (newDogs) => {
+            if ((newDogs) && (newDogs.find(
+                (selectedDog) => selectedDog.selected === true,
+            ))
+            ) {
+                dogsContextMethods.deleteSelectedButtonEnabled();
+            } else {
+                dogsContextMethods.deleteSelectedButtonDisabled();
+                dogsContextMethods.hideAllCheckboxes();
+            }
         },
         handleDogCheckboxClick: (id, isSelected) => {
-            dispatch({
-                type: 'DOG_CHECKBOX_CLICKED',
-                id,
-                isSelected,
+            const dogsWithSelectedDog = dogsContextStatus.dogs.map((dog) => {
+                if (dog.id === id) {
+                    return {
+                        ...dog,
+                        selected: isSelected,
+                    };
+                }
+                return dog;
             });
+            dogsContextMethods.setDogs(dogsWithSelectedDog);
         },
     };
 

@@ -12,65 +12,47 @@ import {
     DogCardProvider,
 } from '../context';
 import { useScreenOrientation } from '../util/useScreenOrientation';
-import { requestNotificationPermission, setUpNotificationEventListeners, displayNotification } from '../ui';
+import { requestNotificationPermission, setUpNotificationsEventListeners, displayNotification } from '../ui';
 
 export const Dogs = () => {
-    const [dogs, setDogs] = useState(null);
     const [simpleErrorMsg, setSimpleErrorMsg] = useState(null);
 
     const orientation = useScreenOrientation();
-    const [dogsColumnsNumber, setDogsColumnsNumber] = useState(1);
+    const [dogCardsColumnsNumber, setDogCardsColumnsNumber] = useState(1);
 
     const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
-
     const { storageStatus, storageMethods } = useContext(FirebaseStorageContext);
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
 
-    const dogsPerPage = 3;
+    const DOGS_PER_PAGE = 3;
 
     useEffect(() => {
         requestNotificationPermission();
-        setUpNotificationEventListeners();
+        setUpNotificationsEventListeners();
         console.log('loading Dogs from firestore...');
-        firestoreMethods.loadDogsFromFirestore(dogsPerPage);
+        firestoreMethods.loadDogsFromFirestore(DOGS_PER_PAGE);
     }, []);
+
+    // TODO delete unneeded dispatch types that don't change anything and only emit signal
+    // TODO refreshes everywhere, is that ok?
 
     useEffect(() => {
         if (orientation === 'PORTRAIT') {
-            setDogsColumnsNumber(1);
+            setDogCardsColumnsNumber(1);
         } else {
-            setDogsColumnsNumber(2);
+            setDogCardsColumnsNumber(2);
         }
     }, [orientation]);
 
-    const loadMoreDogs = () => {
-        // TODO show footer spinner
-        firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentDogsLoaded + dogsPerPage);
+    const loadMoreDogsFromFirestore = () => {
+        dogsContextMethods.showLoadMoreSpinner();
+        firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentNumberOfDogsLoaded
+            + DOGS_PER_PAGE);
     };
 
     useEffect(() => {
         switch (dogsContextStatus?.type) {
-            case 'DOGS_LOADED':
-                setDogs(dogsContextStatus.dogs);
-                // TODO is it possible to move dogs to context? create DOGS_CHANGED(updated?)
-                // (helps to get rid of dog_check_box_clicked also)
-                // to set them again or smth or just get them from context directly
-                // TODO move error(s) to context also?
-                break;
-            case 'DOG_CHECKBOX_CLICKED':
-                const { id } = dogsContextStatus;
-                const { isSelected } = dogsContextStatus;
-                const dogsWithSelectedDog = dogs.map((dog) => {
-                    if (dog.id === id) {
-                        return {
-                            ...dog,
-                            selected: isSelected,
-                        };
-                    }
-                    return dog;
-                });
-                dogsContextMethods.updateDogs(dogsWithSelectedDog);
-                break;
+            // TODO move error(s) to context also?
             case 'ERROR':
                 setSimpleErrorMsg(dogsContextStatus.error);
                 break;
@@ -105,9 +87,9 @@ export const Dogs = () => {
 
     useEffect(() => {
         switch (firestoreStatus?.type) {
+            // TODO possible to move this?
             case 'LOADED_DOGS_FROM_FIRESTORE':
-                // TODO looks like it's needed also
-                dogsContextMethods.setDogsFromFirestore(dogs, firestoreStatus.dogsFromFirestore);
+                dogsContextMethods.setDogsFromFirestore(firestoreStatus.dogsFromFirestore);
                 break;
             case 'ERROR':
                 setSimpleErrorMsg(firestoreStatus.errorMessage);
@@ -117,30 +99,29 @@ export const Dogs = () => {
                 dogsContextMethods.hideAllCheckboxes();
                 refreshDogs();
                 break;
+            case 'FIRESTORE_DOG_DELETED':
+                refreshDogs();
+                break;
             case 'DELETE_FROM_STORAGE':
                 // TODO probably needed
+                refreshDogs();
                 storageMethods.deleteByUrl(firestoreStatus.urlToDeleteFromStorage);
+                break;
+            case 'FIRESTORE_DOG_ADDED':
+                refreshDogs();
                 break;
             default:
                 break;
         }
     }, [firestoreStatus]);
 
-    useEffect(() => {
-        // TODO i guess this might be moved to context with dogs
-        if ((dogs) && (dogs.find((selectedDog) => selectedDog.selected === true))) {
-            dogsContextMethods.deleteSelectedButtonEnabled();
-        } else {
-            dogsContextMethods.deleteSelectedButtonDisabled();
-            dogsContextMethods.hideAllCheckboxes();
-        }
-    }, [dogs]);
-
     const refreshDogs = () => {
         console.log('refreshing');
-        firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentDogsLoaded);
-        // TODO on edit of dog, call refreshDogs() to see new edit
-        // TODO update on delete all/selected, and update on add(random/custom)
+        if (firestoreStatus.currentNumberOfDogsLoaded > DOGS_PER_PAGE) {
+            firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentNumberOfDogsLoaded);
+        } else {
+            firestoreMethods.loadDogsFromFirestore(DOGS_PER_PAGE);
+        }
     };
 
     return (
@@ -167,18 +148,18 @@ export const Dogs = () => {
                 onPress={() => { setSimpleErrorMsg(null); }}
             />
             {
-                dogs
+                dogsContextStatus.dogs
                 && (
-                    dogs.length !== 0
+                    dogsContextStatus.dogs.length !== 0
                         ? (
                             <FlatList
                                 contentContainerStyle={styles.dogsContainer}
-                                numColumns={dogsColumnsNumber}
-                                key={dogsColumnsNumber}
+                                numColumns={dogCardsColumnsNumber}
+                                key={dogCardsColumnsNumber}
                                 keyExtractor={(dog) => dog.id}
-                                onEndReached={loadMoreDogs}
+                                onEndReached={loadMoreDogsFromFirestore}
                                 onEndReachedThreshold={0.1}
-                                data={dogs}
+                                data={dogsContextStatus.dogs}
                                 ListFooterComponent={
                                     () => (
                                         <Spinner
