@@ -1,6 +1,10 @@
-import React, { useReducer, createContext } from 'react';
+import React, { useReducer, createContext, useContext } from 'react';
+import { Platform } from 'react-native';
 import { firebaseAuth as auth, firebaseStorage as storage } from '../config/Firebase';
 import { UniqueIdGenerator } from '../util/UniqueIdGenerator';
+import { firestoreDogCollectionAdd, storageDeleteByUrl } from '../api';
+import { displayNotification } from '../ui';
+import { FirestoreContext } from './FirestoreContext';
 
 const reducer = (prevState, action) => {
     switch (action.type) {
@@ -9,6 +13,7 @@ const reducer = (prevState, action) => {
             return {
                 ...prevState,
                 type: 'DOG_PICTURE_UPLOADED',
+                spinnerIsVisible: false,
             };
         case 'DOG_PICTURE_DELETED':
             console.log('storage reducer: DOG_PICTURE_DELETED');
@@ -16,13 +21,6 @@ const reducer = (prevState, action) => {
                 ...prevState,
                 spinnerIsVisible: false,
                 type: 'DOG_PICTURE_DELETED',
-            };
-        case 'ADD_CUSTOM_DOG_TO_FIRESTORE':
-            return {
-                ...prevState,
-                type: 'ADD_CUSTOM_DOG_TO_FIRESTORE',
-                spinnerIsVisible: false,
-                dogToAdd: action.dogToAdd,
             };
         case 'UPDATE_PROGRESS_BAR':
             return {
@@ -43,6 +41,11 @@ const reducer = (prevState, action) => {
                 spinnerIsVisible: false,
                 errorMessage: action.errorMessage,
             };
+        case 'CLEAR_ERROR_MESSAGE':
+            return {
+                ...prevState,
+                error: null,
+            };
         default:
             return prevState;
     }
@@ -55,6 +58,8 @@ export const FirebaseStorageProvider = ({ children }) => {
         spinnerIsVisible: false,
     };
     const [storageStatus, dispatch] = useReducer(reducer, initialState);
+
+    const { firestoreMethods } = useContext(FirestoreContext);
 
     const storageMethods = {
         addCustomDog: async (result) => {
@@ -70,6 +75,11 @@ export const FirebaseStorageProvider = ({ children }) => {
                     (snapshot) => {
                         const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log(`uploaded ${percentage}%`);
+
+                        if (Platform.OS === 'android') {
+                            displayNotification('Custom dog picture:', '', 'PROGRESS', percentage);
+                        }
+
                         dispatch({
                             type: 'UPDATE_PROGRESS_BAR',
                             percentage,
@@ -86,7 +96,6 @@ export const FirebaseStorageProvider = ({ children }) => {
 
                 task.then(async () => {
                     console.log('storage upload task completed!');
-                    dispatch({ type: 'DOG_PICTURE_UPLOADED' });
                     const fileUrl = await fileRef.getDownloadURL();
 
                     const addCustomdDog = {
@@ -95,10 +104,12 @@ export const FirebaseStorageProvider = ({ children }) => {
                         imageUrl: fileUrl,
                         custom: true,
                     };
-                    dispatch({
-                        type: 'ADD_CUSTOM_DOG_TO_FIRESTORE',
-                        dogToAdd: addCustomdDog,
-                    });
+                    await firestoreDogCollectionAdd(addCustomdDog);
+
+                    displayNotification('Custom dog picture:', 'upload complete');
+
+                    firestoreMethods.refreshDogs();
+                    dispatch({ type: 'DOG_PICTURE_UPLOADED' });
                 });
                 return { result: true };
             } catch (error) {
@@ -115,8 +126,7 @@ export const FirebaseStorageProvider = ({ children }) => {
         deleteByUrl: async (url) => {
             try {
                 dispatch({ type: 'SHOW_SPINNER' });
-                const imageRef = storage.refFromURL(url);
-                await storage.ref(imageRef.fullPath).delete();
+                storageDeleteByUrl(url);
                 dispatch({ type: 'DOG_PICTURE_DELETED' });
                 console.log('deleted');
                 return { result: true };
@@ -127,6 +137,9 @@ export const FirebaseStorageProvider = ({ children }) => {
                 });
                 return { result: false };
             }
+        },
+        clearErrorMessage: () => {
+            dispatch({ type: 'CLEAR_ERROR_MESSAGE' });
         },
     };
 

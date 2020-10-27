@@ -15,8 +15,6 @@ export const Dog = ({ dogData }) => {
     const [deleteCheckBoxChecked, setDeleteCheckBoxChecked] = useState(dogData.selected);
     const [imageUrlFromStorage, setImageUrlFromStorage] = useState(null);
 
-    const [checkboxVisible, setCheckboxVisible] = useState(false);
-
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
     const { dogCardModalStatus } = useContext(DogCardContext);
     const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
@@ -32,10 +30,6 @@ export const Dog = ({ dogData }) => {
         };
         call();
     }, []);
-
-    useEffect(() => {
-        setCheckboxVisible(dogsContextStatus.checkboxesVisible);
-    }, [dogsContextStatus]);
 
     useEffect(() => {
         if (dogCardModalStatus) {
@@ -121,7 +115,7 @@ export const Dog = ({ dogData }) => {
                             />
                         )}
                     <DogCheckbox
-                        visible={checkboxVisible}
+                        visible={dogsContextStatus.checkboxesVisible}
                         isChecked={deleteCheckBoxChecked}
                     />
                     <TouchableOpacity

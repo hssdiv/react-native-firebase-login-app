@@ -8,7 +8,10 @@ export const DrawerContent = (props) => {
     const { authMethods } = useContext(AuthContext);
 
     return (
-        <DrawerContentScrollView {...props}>
+        <DrawerContentScrollView
+            {...props}
+            bounces={false}
+        >
             <View
                 style={{
                     height: 180,

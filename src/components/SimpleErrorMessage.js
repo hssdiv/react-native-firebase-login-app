@@ -6,22 +6,23 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const SimpleErrorMessage = ({ error, onPress }) => (
     error
-    && (
-        <View
-            style={styles.container}
-        >
-            <TouchableOpacity
-                onPress={onPress}
+        ? (
+            <View
+                style={styles.container}
             >
-                <Text
-                    style={styles.error}
+                <TouchableOpacity
+                    onPress={onPress}
                 >
-                    {error}
-                    &#10006;
-                </Text>
-            </TouchableOpacity>
-        </View>
-    )
+                    <Text
+                        style={styles.error}
+                    >
+                        {error}
+                        &#10006;
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        )
+        : null
 );
 
 const styles = StyleSheet.create({

@@ -7,15 +7,15 @@ import {
 export function MainProvider({ children }) {
     return (
         <AuthProvider>
-            <FirebaseStorageProvider>
-                <FirestoreProvider>
+            <FirestoreProvider>
+                <FirebaseStorageProvider>
                     <PlanetsProvider>
                         <DogsProvider>
                             {children}
                         </DogsProvider>
                     </PlanetsProvider>
-                </FirestoreProvider>
-            </FirebaseStorageProvider>
+                </FirebaseStorageProvider>
+            </FirestoreProvider>
         </AuthProvider>
     );
 }

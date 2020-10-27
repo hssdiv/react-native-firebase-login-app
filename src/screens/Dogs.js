@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-    View, StyleSheet, Text, Platform, RefreshControl,
+    View, StyleSheet, Text, RefreshControl,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import {
@@ -12,29 +12,21 @@ import {
     DogCardProvider,
 } from '../context';
 import { useScreenOrientation } from '../util/useScreenOrientation';
-import { requestNotificationPermission, setUpNotificationsEventListeners, displayNotification } from '../ui';
+import { setUpNotificationsEventListeners } from '../ui';
+import { DOGS_PER_PAGE } from '../constants';
 
 export const Dogs = () => {
-    const [simpleErrorMsg, setSimpleErrorMsg] = useState(null);
-
     const orientation = useScreenOrientation();
     const [dogCardsColumnsNumber, setDogCardsColumnsNumber] = useState(1);
 
     const { dogsContextStatus, dogsContextMethods } = useContext(DogsContext);
-    const { storageStatus, storageMethods } = useContext(FirebaseStorageContext);
+    const { storageStatus } = useContext(FirebaseStorageContext);
     const { firestoreStatus, firestoreMethods } = useContext(FirestoreContext);
 
-    const DOGS_PER_PAGE = 3;
-
     useEffect(() => {
-        requestNotificationPermission();
         setUpNotificationsEventListeners();
-        console.log('loading Dogs from firestore...');
         firestoreMethods.loadDogsFromFirestore(DOGS_PER_PAGE);
     }, []);
-
-    // TODO delete unneeded dispatch types that don't change anything and only emit signal
-    // TODO refreshes everywhere, is that ok?
 
     useEffect(() => {
         if (orientation === 'PORTRAIT') {
@@ -44,84 +36,16 @@ export const Dogs = () => {
         }
     }, [orientation]);
 
+    useEffect(() => {
+        if (firestoreStatus?.type === 'LOADED_DOGS_FROM_FIRESTORE') {
+            dogsContextMethods.setDogsFromFirestore(firestoreStatus.dogsFromFirestore);
+        }
+    }, [firestoreStatus]);
+
     const loadMoreDogsFromFirestore = () => {
         dogsContextMethods.showLoadMoreSpinner();
         firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentNumberOfDogsLoaded
             + DOGS_PER_PAGE);
-    };
-
-    useEffect(() => {
-        switch (dogsContextStatus?.type) {
-            // TODO move error(s) to context also?
-            case 'ERROR':
-                setSimpleErrorMsg(dogsContextStatus.error);
-                break;
-            default:
-                break;
-        }
-    }, [dogsContextStatus]);
-
-    useEffect(() => {
-        switch (storageStatus?.type) {
-            case 'ADD_CUSTOM_DOG_TO_FIRESTORE':
-                // TODO needed
-                firestoreMethods.addDogToFirestore(storageStatus.dogToAdd);
-                break;
-            case 'ERROR':
-                setSimpleErrorMsg(storageStatus.errorMessage);
-                break;
-            // TODO call notifications directly from context?
-            // ask for permissions after custom add confirm button?
-            case 'UPDATE_PROGRESS_BAR':
-                if (Platform.OS === 'android') {
-                    displayNotification('Custom dog picture:', '', 'PROGRESS', storageStatus.percentage);
-                }
-                break;
-            case 'DOG_PICTURE_UPLOADED':
-                displayNotification('Custom dog picture:', 'upload complete');
-                break;
-            default:
-                break;
-        }
-    }, [storageStatus]);
-
-    useEffect(() => {
-        switch (firestoreStatus?.type) {
-            // TODO possible to move this?
-            case 'LOADED_DOGS_FROM_FIRESTORE':
-                dogsContextMethods.setDogsFromFirestore(firestoreStatus.dogsFromFirestore);
-                break;
-            case 'ERROR':
-                setSimpleErrorMsg(firestoreStatus.errorMessage);
-                break;
-            case 'FIRESTORE_BATCH_DELETE':
-                // TODO probably needed
-                dogsContextMethods.hideAllCheckboxes();
-                refreshDogs();
-                break;
-            case 'FIRESTORE_DOG_DELETED':
-                refreshDogs();
-                break;
-            case 'DELETE_FROM_STORAGE':
-                // TODO probably needed
-                refreshDogs();
-                storageMethods.deleteByUrl(firestoreStatus.urlToDeleteFromStorage);
-                break;
-            case 'FIRESTORE_DOG_ADDED':
-                refreshDogs();
-                break;
-            default:
-                break;
-        }
-    }, [firestoreStatus]);
-
-    const refreshDogs = () => {
-        console.log('refreshing');
-        if (firestoreStatus.currentNumberOfDogsLoaded > DOGS_PER_PAGE) {
-            firestoreMethods.loadDogsFromFirestore(firestoreStatus.currentNumberOfDogsLoaded);
-        } else {
-            firestoreMethods.loadDogsFromFirestore(DOGS_PER_PAGE);
-        }
     };
 
     return (
@@ -144,8 +68,8 @@ export const Dogs = () => {
                 type="MODAL_DELETE_ALL_PRESSED"
             />
             <SimpleErrorMessage
-                error={simpleErrorMsg}
-                onPress={() => { setSimpleErrorMsg(null); }}
+                error={dogsContextStatus.error || firestoreStatus.error || storageStatus.error}
+                onPress={dogsContextMethods.clearErrorMessage}
             />
             {
                 dogsContextStatus.dogs
@@ -172,7 +96,7 @@ export const Dogs = () => {
                                     <RefreshControl
                                         colors={['#9Bd35A', '#689F38']}
                                         refreshing={dogsContextStatus.refreshSpinnerIsVisible}
-                                        onRefresh={refreshDogs}
+                                        onRefresh={firestoreMethods.refreshDogs}
                                     />
                                 )}
                                 renderItem={

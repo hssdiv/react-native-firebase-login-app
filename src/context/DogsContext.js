@@ -119,6 +119,11 @@ const reducer = (prevState, action) => {
                 addDogModalIsVisible: false,
                 error: action.error,
             };
+        case 'CLEAR_ERROR_MESSAGE':
+            return {
+                ...prevState,
+                error: null,
+            };
         default:
             return initialState;
     }
@@ -137,6 +142,7 @@ const initialState = ({
     checkboxesVisible: false,
     type: '',
     dogs: null,
+    error: null,
 });
 
 export const DogsProvider = ({ children }) => {
@@ -213,7 +219,6 @@ export const DogsProvider = ({ children }) => {
             }
         },
         confirmAddCustom: (customDog) => {
-            dispatch({ type: 'SHOW_SPINNER' });
             dispatch({
                 type: 'MODAL_ADD_DOG_CONFIRMED_CUSTOM',
             });
@@ -234,10 +239,12 @@ export const DogsProvider = ({ children }) => {
         confirmDeleteSelectedPressed: () => {
             dispatch({ type: 'MODAL_DELETE_SELECTED_PRESSED' });
             firestoreMethods.deleteSelected(dogsContextStatus.dogs);
+            dogsContextMethods.hideAllCheckboxes();
         },
         confirmDeleteAllPressed: () => {
             dispatch({ type: 'MODAL_DELETE_ALL_PRESSED' });
             firestoreMethods.deleteAll();
+            dogsContextMethods.hideAllCheckboxes();
         },
         deleteSelectedButtonEnabled: () => {
             dispatch({ type: 'DELETE_SELECTED_BUTTON_ENABLED' });
@@ -313,6 +320,11 @@ export const DogsProvider = ({ children }) => {
                 return dog;
             });
             dogsContextMethods.setDogs(dogsWithSelectedDog);
+        },
+        clearErrorMessage: () => {
+            dispatch({ type: 'CLEAR_ERROR_MESSAGE' });
+            firestoreMethods.clearErrorMessage();
+            storageMethods.clearErrorMessage();
         },
     };
 

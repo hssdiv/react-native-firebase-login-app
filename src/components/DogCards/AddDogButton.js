@@ -4,14 +4,19 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DogsContext } from '../../context';
-
+import { requestNotificationPermission } from '../../ui';
 
 export const AddDogButton = () => {
     const { dogsContextMethods } = useContext(DogsContext);
 
+    const handleAddDogPress = () => {
+        requestNotificationPermission();
+        dogsContextMethods.showAddDogModal();
+    };
+
     return (
         <TouchableOpacity
-            onPress={() => dogsContextMethods.showAddDogModal()}
+            onPress={handleAddDogPress}
             style={styles.floatingActionButton}
         >
             <Icon

@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 220,
         borderRadius: 10,
-        backgroundColor: 'lightgrey',
+        backgroundColor: 'blue',
         marginLeft: 50,
         marginRight: 50,
         marginTop: 20,
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.7,
     },
     selectButtonText: {
-        color: 'black',
+        color: 'white',
         textAlign: 'center',
         textAlignVertical: 'center',
         padding: 3,

@@ -18,12 +18,12 @@ export const StackNavigatorTemplate = ({ name, component }) => {
     useEffect(() => {
         if (storageStatus) {
             switch (storageStatus.type) {
-                case 'UPLOADED':
-                    setProgressWidth(0);
-                    break;
-                case 'PROGRESS':
+                case 'UPDATE_PROGRESS_BAR':
                     console.log(`in pixel: ${(screenWidth / 100) * storageStatus.percentage}`);
                     setProgressWidth(screenWidth * storageStatus.percentage);
+                    break;
+                case 'DOG_PICTURE_UPLOADED':
+                    setProgressWidth(0);
                     break;
                 default:
                     break;

@@ -1,4 +1,5 @@
 import notifee, { IOSAuthorizationStatus, EventType } from '@notifee/react-native';
+import { Platform } from 'react-native';
 
 export const requestNotificationPermission = async () => {
     const settings = await notifee.requestPermission();
@@ -44,17 +45,19 @@ export const displayNotification = async (notificationTitle, notificationText, t
             console.log('displaying upload progress #2');
         } else {
             console.log('displaying upload complete');
-            await notifee.displayNotification({
-                title: notificationTitle,
-                id: 'progressNotification',
-                android: {
-                    channelId,
-                    progress: {
-                        max: 100,
-                        current: 100,
+            if (Platform.OS === 'android') {
+                await notifee.displayNotification({
+                    title: notificationTitle,
+                    id: 'progressNotification',
+                    android: {
+                        channelId,
+                        progress: {
+                            max: 100,
+                            current: 100,
+                        },
                     },
-                },
-            });
+                });
+            }
             await notifee.displayNotification({
                 id: 'progressNotification',
                 title: notificationTitle,
