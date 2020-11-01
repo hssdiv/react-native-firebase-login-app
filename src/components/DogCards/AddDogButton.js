@@ -4,13 +4,14 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DogsContext } from '../../context';
-import { requestNotificationPermission } from '../../ui';
+import { setUpNotificationsEventListeners, requestNotificationPermission } from '../../ui';
 
 export const AddDogButton = () => {
     const { dogsContextMethods } = useContext(DogsContext);
 
     const handleAddDogPress = () => {
         requestNotificationPermission();
+        setUpNotificationsEventListeners();
         dogsContextMethods.showAddDogModal();
     };
 

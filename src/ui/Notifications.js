@@ -16,24 +16,27 @@ export const setUpNotificationsEventListeners = () => {
             notifee.cancelNotification('progressNotification');
         }
     });
-    notifee.onBackgroundEvent(({ type }) => {
+    notifee.onBackgroundEvent(async ({ type }) => {
         if (type === EventType.PRESS) {
             notifee.cancelNotification('progressNotification');
         }
     });
 };
 
-export const displayNotification = async (notificationTitle, notificationText, type, progress) => {
+export const displayNotification = async ({
+    title, text, type, progress,
+}) => {
     const channelId = await notifee.createChannel({
         id: 'uploadChannel',
         name: 'Upload channel',
     });
+    const id = 'progressNotification';
     if (progress !== 100) {
         if (type === 'PROGRESS') {
             console.log('displaying upload progress');
             await notifee.displayNotification({
-                title: notificationTitle,
-                id: 'progressNotification',
+                title,
+                id,
                 android: {
                     channelId,
                     progress: {
@@ -47,8 +50,8 @@ export const displayNotification = async (notificationTitle, notificationText, t
             console.log('displaying upload complete');
             if (Platform.OS === 'android') {
                 await notifee.displayNotification({
-                    title: notificationTitle,
-                    id: 'progressNotification',
+                    title,
+                    id,
                     android: {
                         channelId,
                         progress: {
@@ -59,9 +62,9 @@ export const displayNotification = async (notificationTitle, notificationText, t
                 });
             }
             await notifee.displayNotification({
-                id: 'progressNotification',
-                title: notificationTitle,
-                body: notificationText,
+                id,
+                title,
+                body: text,
                 android: {
                     channelId,
                 },

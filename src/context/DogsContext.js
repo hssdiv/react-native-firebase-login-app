@@ -141,7 +141,7 @@ const initialState = ({
     loadMoreSpinnerIsVisible: false,
     checkboxesVisible: false,
     type: '',
-    dogs: null,
+    dogs: [],
     error: null,
 });
 

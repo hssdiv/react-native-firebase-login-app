@@ -77,7 +77,12 @@ export const FirebaseStorageProvider = ({ children }) => {
                         console.log(`uploaded ${percentage}%`);
 
                         if (Platform.OS === 'android') {
-                            displayNotification('Custom dog picture:', '', 'PROGRESS', percentage);
+                            const notification = {
+                                title: 'Custom picture upload:',
+                                type: 'PROGRESS',
+                                progress: percentage,
+                            };
+                            displayNotification(notification);
                         }
 
                         dispatch({
@@ -105,8 +110,11 @@ export const FirebaseStorageProvider = ({ children }) => {
                         custom: true,
                     };
                     await firestoreDogCollectionAdd(addCustomdDog);
-
-                    displayNotification('Custom dog picture:', 'upload complete');
+                    const notification = {
+                        title: 'Custom picture upload:',
+                        text: 'completed',
+                    };
+                    await displayNotification(notification);
 
                     firestoreMethods.refreshDogs();
                     dispatch({ type: 'DOG_PICTURE_UPLOADED' });
