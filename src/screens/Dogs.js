@@ -83,13 +83,14 @@ export const Dogs = () => {
                             () => (
                                 <Spinner
                                     visible={dogsContextStatus.loadMoreSpinnerIsVisible}
+                                    footer
                                 />
                             )
                         }
                         ListFooterComponentStyle={{ marginTop: 20 }}
                         refreshControl={(
                             <RefreshControl
-                                colors={['#9Bd35A', '#689F38']}
+                                colors={['black']}
                                 refreshing={dogsContextStatus.refreshSpinnerIsVisible}
                                 onRefresh={firestoreMethods.refreshDogs}
                             />
@@ -106,13 +107,18 @@ export const Dogs = () => {
                     />
                 )
                 : (
-                    <View
-                        style={styles.hint}
-                    >
-                        <Text>
-                            Add dog(s) to display.
-                        </Text>
-                    </View>
+                    !(dogsContextStatus.spinnerIsVisible
+                        || storageStatus.spinnerIsVisible
+                        || firestoreStatus.spinnerIsVisible)
+                        && (
+                            <View
+                                style={styles.hint}
+                            >
+                                <Text>
+                                    Add dog(s) to display.
+                                </Text>
+                            </View>
+                        )
                 )}
             <AddDogButton />
             <Spinner

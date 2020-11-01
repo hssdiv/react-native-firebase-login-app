@@ -1,32 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
-export const Spinner = ({ visible }) => {
-    const [innerVisibility, setInnerVisibility] = useState(visible);
+export const Spinner = ({ visible, footer }) => (
 
-    useEffect(() => {
-        setInnerVisibility(visible);
-        if (visible === undefined) {
-            setInnerVisibility(true);
-        }
-    }, [visible]);
-
-    return (
-        innerVisibility
-            ? (
-                <View style={{
-                    position: 'absolute',
-                    top: '46%',
-                    left: '46%',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-                >
-                    <ActivityIndicator
-                        size="large"
-                    />
-                </View>
-            )
-            : null
-    );
-};
+    footer
+        ? (
+            <View style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+            >
+                <ActivityIndicator
+                    animating={visible}
+                    size="large"
+                    color="black"
+                />
+            </View>
+        )
+        : (
+            <View style={{
+                position: 'absolute',
+                top: '46%',
+                left: '46%',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+            >
+                <ActivityIndicator
+                    animating={visible}
+                    size="large"
+                    color="black"
+                />
+            </View>
+        )
+);

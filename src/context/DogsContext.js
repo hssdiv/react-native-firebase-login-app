@@ -28,6 +28,7 @@ const reducer = (prevState, action) => {
                 ...prevState,
                 type: 'DOGS_LOADED',
                 spinnerIsVisible: false,
+                refreshSpinnerIsVisible: false,
                 loadMoreSpinnerIsVisible: false,
                 dogs: action.dogs,
             };
@@ -254,6 +255,7 @@ export const DogsProvider = ({ children }) => {
         },
         setDogsFromFirestore: (firestoreDogs) => {
             if (firestoreDogs) {
+                dispatch({ type: 'SHOW_SPINNER' });
                 console.log(`Dogs size: ${firestoreDogs.length}`);
                 if (dogsContextStatus.dogs) {
                     const dogsMerged = firestoreDogs.map((firestoreDog) => {

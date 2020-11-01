@@ -132,29 +132,30 @@ export const FirestoreProvider = ({ children }) => {
             }
         },
         deleteDogFromFirestore: (dogData) => {
-            firestore.collection('dogs').doc(dogData.id).delete().then(async () => {
+            try {
                 dispatch({ type: 'SHOW_SPINNER' });
-                console.log('Dog successfully deleted!');
-                if (dogData.custom) {
-                    await storageDeleteByUrl(dogData.imageUrl);
+                firestore.collection('dogs').doc(dogData.id).delete().then(async () => {
+                    console.log('Dog successfully deleted!');
+                    if (dogData.custom) {
+                        await storageDeleteByUrl(dogData.imageUrl);
+                        dispatch({
+                            type: 'DELETED_FROM_STORAGE',
+                        });
+                    }
+
+                    firestoreMethods.refreshDogs();
+
                     dispatch({
-                        type: 'DELETED_FROM_STORAGE',
+                        type: 'FIRESTORE_DOG_DELETED',
                     });
-                }
-
-                firestoreMethods.refreshDogs();
-
+                });
+            } catch (error) {
+                console.error('Error removing dog: ', error);
                 dispatch({
-                    type: 'FIRESTORE_DOG_DELETED',
+                    type: 'FIRESTORE_ERROR',
+                    error: error.message,
                 });
-            })
-                .catch((error) => {
-                    console.error('Error removing dog: ', error);
-                    dispatch({
-                        type: 'FIRESTORE_ERROR',
-                        error: error.message,
-                    });
-                });
+            }
         },
         deleteSelected: (dogs) => {
             const selectedDogs = dogs.filter((dog) => dog.selected);
