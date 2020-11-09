@@ -8,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { AuthContext } from './context';
 import {
-    Login, Registration, Public, Private, Next, Planets, Dogs,
+    Login, Registration, Public, Private, Next, Planets, Dogs, Sensors,
 } from './screens';
 import { DrawerContent, StackNavigatorTemplate } from './components';
 
@@ -24,6 +24,7 @@ export const MainApp = () => {
         { name: 'Next', component: Next, icon: 'page-next' },
         { name: 'Planets', component: Planets, icon: 'earth' },
         { name: 'Dogs', component: Dogs, icon: 'dog-side' },
+        { name: 'Sensors', component: Sensors, icon: 'cellphone-information' },
     ];
 
     const publicScreens = [
