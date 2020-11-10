@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReactMethod
 class SensorsModule internal constructor(context: Context, reactApplicationContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactApplicationContext) {
     private val sensorManager: SensorManager
     override fun getName(): String {
-        return "Sensor"
+        return "Sensors"
     }
 
     private var acceleromenterSensorListener: SensorEventListener? = null

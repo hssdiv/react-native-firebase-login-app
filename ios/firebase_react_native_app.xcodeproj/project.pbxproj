@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* firebase_react_native_appTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* firebase_react_native_appTests.m */; };
+		04402BA5255A7FFB002410AF /* Sensors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04402BA4255A7FFB002410AF /* Sensors.swift */; };
+		04402BAB255A85DC002410AF /* Sensors.m in Sources */ = {isa = PBXBuildFile; fileRef = 04402BAA255A85DC002410AF /* Sensors.m */; };
 		04609702251CFF300025D783 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04609701251CFF300025D783 /* GoogleService-Info.plist */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -46,6 +48,9 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* firebase_react_native_appTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = firebase_react_native_appTests.m; sourceTree = "<group>"; };
 		04212D362520D6CC00AD7F2E /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		04402BA3255A7FFB002410AF /* firebase_react_native_app-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "firebase_react_native_app-Bridging-Header.h"; sourceTree = "<group>"; };
+		04402BA4255A7FFB002410AF /* Sensors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sensors.swift; sourceTree = "<group>"; };
+		04402BAA255A85DC002410AF /* Sensors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Sensors.m; sourceTree = "<group>"; };
 		04609701251CFF300025D783 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* firebase_react_native_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = firebase_react_native_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = firebase_react_native_app/AppDelegate.h; sourceTree = "<group>"; };
@@ -186,6 +191,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				04402BA4255A7FFB002410AF /* Sensors.swift */,
+				04402BAA255A85DC002410AF /* Sensors.m */,
 				04609701251CFF300025D783 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* firebase_react_native_app */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -193,6 +200,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				4D54C27C9004BB0E72C6BD20 /* Pods */,
+				04402BA3255A7FFB002410AF /* firebase_react_native_app-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -311,7 +319,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1210;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -763,7 +771,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				04402BAB255A85DC002410AF /* Sensors.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				04402BA5255A7FFB002410AF /* Sensors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -804,6 +814,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 538EA9CF09AED0DF61357ECB /* Pods-firebase_react_native_app-firebase_react_native_appTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -827,6 +838,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5C6DBC6A91334C96F259C1CA /* Pods-firebase_react_native_app-firebase_react_native_appTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = firebase_react_native_appTests/Info.plist;
@@ -860,6 +872,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.div.firebase-react-native-app";
 				PRODUCT_NAME = firebase_react_native_app;
+				SWIFT_OBJC_BRIDGING_HEADER = "firebase_react_native_app-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -882,6 +895,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.div.firebase-react-native-app";
 				PRODUCT_NAME = firebase_react_native_app;
+				SWIFT_OBJC_BRIDGING_HEADER = "firebase_react_native_app-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
