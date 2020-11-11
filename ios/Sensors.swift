@@ -8,8 +8,8 @@
 import Foundation
 import CoreMotion
 
-@objc(Sensors)
-class Sensors: NSObject {
+@objc(Sensors2)
+class Sensors2: NSObject {
   let motion = CMMotionManager()
   
   @objc

@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import {
-    Text, View, NativeModules, StyleSheet,
+    Text,
+    View,
+    NativeModules,
+    StyleSheet,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import RNSensorsNativeModule from '@hssdiv/react-native-sensors-native-module';
 
 export const Sensors = () => {
     const [ax, setAx] = useState(null);
@@ -14,11 +18,14 @@ export const Sensors = () => {
     const [gz, setGz] = useState(null);
 
     const handleOnToastPress = () => {
-        NativeModules.Sensors.showToast('Awesome');
+        // NativeModules.Sensors.showToast('Awesome');
+        console.log(NativeModules.Sensors2);
+        console.log(RNSensorsNativeModule);
+        RNSensorsNativeModule.showToast('Awesome');
     };
 
     const handleOnAccelerometerPress = () => {
-        NativeModules.Sensors.getAccelerometerData((x, y, z) => {
+        NativeModules.RNSensorsNativeModule.getAccelerometerData((x, y, z) => {
             setAx(x.toFixed(2));
             setAy(y.toFixed(2));
             setAz(z.toFixed(2));
@@ -27,7 +34,7 @@ export const Sensors = () => {
     };
 
     const handleOnGyroscopePress = () => {
-        NativeModules.Sensors.getGyroscopeData((x, y, z) => {
+        RNSensorsNativeModule.getGyroscopeData((x, y, z) => {
             setGx(x.toFixed(2));
             setGy(y.toFixed(2));
             setGz(z.toFixed(2));

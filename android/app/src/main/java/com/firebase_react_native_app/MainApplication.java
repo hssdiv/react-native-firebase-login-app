@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.sensornativemodule.RNSensorsNativeModulePackage;
+import com.sensornativemodule.RNSensorsNativeModulePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -28,7 +30,11 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
-          packages.add(new SensorsPackage(getApplicationContext())); // <-- Add this line with your package name.
+
+
+            //packages.add(new RNSensorsNativeModulePackage(getApplicationContext()));// <-- Add this line with your package name.
+
+            packages.add(new SensorsPackage(getApplicationContext()));
           return packages;
         }
 

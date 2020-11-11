@@ -228,7 +228,8 @@ apply from: file("../../node_modules/@react-native-community/cli-platform-androi
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 dependencies {
-  compile 'com.android.support:multidex:1.0.1' //enter the latest version
+    implementation 'com.android.support:multidex:1.0.1' //enter the latest version
+    implementation project(':@hssdiv_react-native-sensors-native-module')
 }
 android {
     defaultConfig {
