@@ -554,7 +554,7 @@ PODS:
     - React-Core
   - react-native-safe-area-context (3.1.8):
     - React-Core
-  - react-native-sensors-native-module (1.0.66):
+  - react-native-sensors-native-module (1.0.69):
     - React
   - react-native-splash-screen (3.2.0):
     - React
@@ -876,7 +876,7 @@ SPEC CHECKSUMS:
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-image-picker: 32d1ad2c0024ca36161ae0d5c2117e2d6c441f11
   react-native-safe-area-context: 01158a92c300895d79dee447e980672dc3fb85a6
-  react-native-sensors-native-module: e5ac81f94dc90f59d640ee3d54a952c730c9f75c
+  react-native-sensors-native-module: b450dc099bdcdc6390a89cd14265bf8b5553ce28
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
