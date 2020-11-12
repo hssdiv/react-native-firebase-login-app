@@ -8,7 +8,7 @@
 #import "React/RCTBridgeModule.h"
 #import <React/RCTLog.h>
 
-@interface RCT_EXTERN_MODULE(Sensors2, NSObject)
+@interface RCT_EXTERN_MODULE(Sensors, NSObject)
 
 RCT_EXTERN_METHOD(showToast: (NSString)message)
 RCT_EXTERN_METHOD(getAccelerometerData: (RCTResponseSenderBlock)callback)

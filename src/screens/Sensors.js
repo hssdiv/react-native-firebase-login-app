@@ -19,13 +19,15 @@ export const Sensors = () => {
 
     const handleOnToastPress = () => {
         // NativeModules.Sensors.showToast('Awesome');
-        console.log(NativeModules.Sensors2);
-        console.log(RNSensorsNativeModule);
+        console.log(NativeModules.Sensors);
+
+        // console.log(RNSensorsNativeModule.getConstants.toString());
+        // RNSensorsNativeModule.showToast('Awesome');
         RNSensorsNativeModule.showToast('Awesome');
     };
 
     const handleOnAccelerometerPress = () => {
-        NativeModules.RNSensorsNativeModule.getAccelerometerData((x, y, z) => {
+        RNSensorsNativeModule.getAccelerometerData((x, y, z) => {
             setAx(x.toFixed(2));
             setAy(y.toFixed(2));
             setAz(z.toFixed(2));

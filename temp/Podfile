@@ -8,7 +8,8 @@ target 'firebase_react_native_app' do
 
   use_react_native!(:path => config["reactNativePath"])
 
-  pod 'RNSensorsNativeModule', :path => '../node_modules/@hssdiv/react-native-sensors-native-module'
+pod 'RNSensorsNativeModule', :path => '../node_modules/@hssdiv/react-native-sensors-native-module/ios'
+
 
   target 'firebase_react_native_appTests' do
     inherit! :complete
@@ -40,3 +41,4 @@ pod 'Firebase/Database'
 pod 'Firebase/Storage'
 pod 'Firebase/Auth'
 pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+pod 'React', :path => '../node_modules/react-native/'
